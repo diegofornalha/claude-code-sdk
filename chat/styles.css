@@ -1,0 +1,569 @@
+/* ============================================
+   Neo4j Agent Chat - Hacker Theme Styles
+   Tema: Matrix Green (#00ff00) + Black (#000)
+   ============================================ */
+
+/* === Reset & Base === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', Consolas, Monaco, monospace;
+    padding: 20px;
+    background: #1a1a1a;
+    color: #00ff00;
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background-color 0.3s ease;
+}
+
+/* === Container === */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* === Typography === */
+h1 {
+    color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    margin-bottom: 20px;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+/* === Debug Panels === */
+.debug-panel {
+    background: #000;
+    border: 1px solid #00ff00;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 13px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.debug-panel:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    border-color: #00ffff;
+}
+
+.debug-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.debug-panel::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+.debug-panel::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 4px;
+}
+
+.debug-panel::-webkit-scrollbar-thumb:hover {
+    background: #00ffff;
+}
+
+/* === Input & Buttons === */
+input, button {
+    background: #000;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px;
+    margin: 5px;
+    font-family: 'Courier New', Consolas, Monaco, monospace;
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+input {
+    outline: none;
+}
+
+input:focus {
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+button {
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+button:hover {
+    background: #00ff00;
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* === Messages Container === */
+#messages {
+    background: #000;
+    border: 1px solid #00ff00;
+    padding: 15px;
+    min-height: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+    scroll-behavior: smooth;
+}
+
+#messages::-webkit-scrollbar {
+    width: 10px;
+}
+
+#messages::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+#messages::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 5px;
+}
+
+#messages::-webkit-scrollbar-thumb:hover {
+    background: #00ffff;
+}
+
+/* === Message Styles === */
+.message {
+    position: relative;
+    margin: 10px 0;
+    padding: 10px 40px 10px 10px;
+    border-left: 3px solid #00ff00;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: rgba(0, 255, 0, 0.02);
+    border-radius: 0 5px 5px 0;
+    animation: slideIn 0.3s ease-out;
+    transition: all 0.3s ease;
+}
+
+.message:hover {
+    background: rgba(0, 255, 0, 0.05);
+    border-left-width: 5px;
+    padding-left: 12px;
+}
+
+.message-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* === Message Types === */
+.message.error {
+    color: #ff0000;
+    border-color: #ff0000;
+    background: rgba(255, 0, 0, 0.02);
+    animation: shake 0.5s ease;
+}
+
+.message.info {
+    color: #00ffff;
+    border-color: #00ffff;
+    background: rgba(0, 255, 255, 0.02);
+}
+
+.message.success {
+    color: #00ff00;
+    border-color: #00ff00;
+}
+
+.message.assistant {
+    border-color: #00ff00;
+}
+
+/* === Typography in Messages === */
+.message h1, .message h2, .message h3, .message h4, .message h5, .message h6 {
+    color: #00ff00;
+    margin: 10px 0;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+    /* Padronizar todos os headers para o mesmo tamanho */
+    font-size: 1em !important;
+    font-weight: bold;
+}
+
+.message strong {
+    color: #00ffff;
+    font-weight: bold;
+}
+
+.message em {
+    font-style: italic;
+    color: #00ff88;
+}
+
+.message code {
+    background: #0a0a0a;
+    padding: 2px 4px;
+    border: 1px solid #00ff00;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+.message pre {
+    background: #0a0a0a;
+    padding: 10px;
+    border: 1px solid #00ff00;
+    overflow-x: auto;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.message pre::-webkit-scrollbar {
+    height: 6px;
+}
+
+.message pre::-webkit-scrollbar-track {
+    background: #000;
+}
+
+.message pre::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 3px;
+}
+
+/* === Copy Button === */
+.copy-btn {
+    display: inline-block;
+    background: #000;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 3px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    opacity: 0;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+    vertical-align: middle;
+    border-radius: 3px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+.message:hover .copy-btn {
+    opacity: 0.6;
+}
+
+.copy-btn:hover {
+    background: #00ff00;
+    color: #000;
+    opacity: 1 !important;
+    transform: scale(1.1);
+}
+
+.copy-btn:active {
+    transform: scale(0.95);
+}
+
+.copy-btn.copied {
+    background: #00ff00;
+    color: #000;
+    opacity: 1 !important;
+    animation: pulse 0.5s ease;
+}
+
+/* === Loading States === */
+.loading {
+    position: relative;
+    opacity: 0.7;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #00ff00;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, rgba(0, 255, 0, 0.05) 25%, rgba(0, 255, 0, 0.1) 50%, rgba(0, 255, 0, 0.05) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* === Status Classes === */
+.status-processing {
+    border-left-color: #ffff00;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-thinking {
+    border-left-color: #00ffff;
+}
+
+.status-error {
+    border-left-color: #ff0000;
+}
+
+/* === Lazy Loading Placeholder === */
+.lazy-placeholder {
+    min-height: 50px;
+    background: rgba(0, 255, 0, 0.02);
+    border: 1px dashed #00ff00;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ff00;
+    opacity: 0.5;
+    animation: fadeIn 0.3s ease;
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+    to {
+        text-shadow: 0 0 20px rgba(0, 255, 0, 0.8), 0 0 30px rgba(0, 255, 0, 0.4);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* === Utility Classes === */
+.hidden {
+    display: none !important;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+.blur {
+    filter: blur(2px);
+    pointer-events: none;
+}
+
+/* === Mobile Responsive === */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 1.5em;
+        text-align: center;
+    }
+
+    input, button {
+        padding: 8px;
+        font-size: 13px;
+        margin: 3px;
+    }
+
+    #messages {
+        min-height: 200px;
+        max-height: 300px;
+        padding: 10px;
+    }
+
+    .message {
+        padding: 8px 35px 8px 8px;
+        font-size: 13px;
+    }
+
+    .debug-panel {
+        max-height: 150px;
+        font-size: 11px;
+        padding: 10px;
+    }
+
+    .copy-btn {
+        opacity: 0.6;
+        font-size: 16px;
+        padding: 5px;
+    }
+
+    button {
+        letter-spacing: 0.5px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+        font-size: 13px;
+    }
+
+    h1 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+    }
+
+    input {
+        width: 100%;
+        max-width: none !important;
+        margin: 3px 0;
+    }
+
+    button {
+        width: 100%;
+        margin: 3px 0;
+    }
+
+    #messages {
+        min-height: 180px;
+        max-height: 250px;
+    }
+
+    .message {
+        font-size: 12px;
+        padding: 6px 30px 6px 6px;
+    }
+
+    .debug-panel {
+        max-height: 120px;
+        font-size: 10px;
+    }
+}
+
+/* === Print Styles === */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+
+    .debug-panel, button, input {
+        display: none;
+    }
+
+    .message {
+        border-color: black;
+        page-break-inside: avoid;
+    }
+}
+
+/* === High Contrast Mode === */
+@media (prefers-contrast: high) {
+    body {
+        background: #000;
+    }
+
+    .message, .debug-panel, input, button {
+        border-width: 2px;
+    }
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* === Dark Mode Support (if needed) === */
+@media (prefers-color-scheme: dark) {
+    /* Already dark theme, but can add variations */
+    body {
+        background: #0a0a0a;
+    }
+}
+
+/* === Focus Visible for Accessibility === */
+*:focus-visible {
+    outline: 2px solid #00ffff;
+    outline-offset: 2px;
+}

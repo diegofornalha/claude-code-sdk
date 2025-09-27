@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Flow Blockchain Agents</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .debug-panel {
+            background: #000;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        input, button {
+            background: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin: 5px;
+            font-family: monospace;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        button:hover {
+            background: #00ff00;
+            color: #000;
+            cursor: pointer;
+        }
+        #messages {
+            background: #000;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 3px solid #00ff00;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .message h1, .message h2, .message h3 {
+            color: #00ff00;
+            margin: 10px 0;
+        }
+        .message strong {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        .message em {
+            font-style: italic;
+        }
+        .error {
+            color: #ff0000;
+            border-color: #ff0000;
+        }
+        .info {
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+        .success {
+            color: #00ff00;
+            border-color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Hackathon Flow Blockchain Agents</h1>
+
+        <div id="messages"></div>
+
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <input type="text" id="messageInput" placeholder="Digite sua mensagem..." style="flex: 1; max-width: 400px;">
+            <button onclick="sendMessage()">Enviar</button>
+            <button onclick="testConnection()">Testar API</button>
+            <button onclick="clearDebug()">Limpar</button>
+        </div>
+
+        <div class="debug-panel" id="status">
+            [STATUS] Inicializando...
+        </div>
+
+        <div class="debug-panel" id="debug">
+            [DEBUG] Console de debug ativo
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8888';
+        let sessionId = null;
+
+        function log(message, type = 'info') {
+            const debugPanel = document.getElementById('debug');
+            const timestamp = new Date().toLocaleTimeString();
+            debugPanel.innerHTML += `\n[${timestamp}] ${message}`;
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+            console.log(`[DEBUG] ${message}`);
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusPanel = document.getElementById('status');
+            statusPanel.className = `debug-panel ${type}`;
+            statusPanel.textContent = `[STATUS] ${message}`;
+        }
+
+        function renderMarkdown(text) {
+            // Converte markdown básico para HTML
+            return text
+                // Headers
+                .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
+                .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
+                .replace(/^# (.*?)$/gm, '<h1>$1</h1>')
+                // Bold
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                // Italic
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                // Code blocks
+                .replace(/```([\s\S]*?)```/g, '<pre style="background:#0a0a0a;padding:10px;border:1px solid #00ff00;overflow-x:auto;">$1</pre>')
+                // Inline code
+                .replace(/`([^`]+)`/g, '<code style="background:#0a0a0a;padding:2px 4px;border:1px solid #00ff00;">$1</code>')
+                // Lists
+                .replace(/^- (.*?)$/gm, '• $1')
+                // Line breaks
+                .replace(/\n/g, '<br>');
+        }
+
+        function addMessage(content, isUser = false) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'info' : 'success'}`;
+
+            // Renderiza markdown para mensagens do Claude
+            if (!isUser) {
+                messageDiv.innerHTML = `<span style="color: ${isUser ? '#00ffff' : '#00ff00'}">🤖 CLAUDE:</span><br>${renderMarkdown(content)}`;
+            } else {
+                messageDiv.innerHTML = `<span style="color: #00ffff">👤 USER:</span><br>${content.replace(/\n/g, '<br>')}`;
+            }
+
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function testConnection() {
+            log('Testando conexão com API...');
+
+            try {
+                // Teste 1: Health Check
+                log('Teste 1: Health Check');
+                const healthResponse = await fetch(`${API_URL}/api/health`);
+                if (healthResponse.ok) {
+                    const health = await healthResponse.json();
+                    log(`✅ Health OK: ${JSON.stringify(health)}`, 'success');
+                    updateStatus('API Online', 'success');
+                } else {
+                    log(`❌ Health falhou: ${healthResponse.status}`, 'error');
+                    updateStatus('API Offline', 'error');
+                }
+
+                // Teste 2: SDK Status
+                log('Teste 2: SDK Status');
+                const sdkResponse = await fetch(`${API_URL}/api/sdk-status`);
+                if (sdkResponse.ok) {
+                    const sdk = await sdkResponse.json();
+                    log(`✅ SDK Status: ${JSON.stringify(sdk)}`, 'success');
+                } else {
+                    log(`❌ SDK Status falhou: ${sdkResponse.status}`, 'error');
+                }
+
+            } catch (error) {
+                log(`❌ Erro de conexão: ${error.message}`, 'error');
+                updateStatus('Erro de Conexão', 'error');
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message) {
+                log('⚠️ Mensagem vazia', 'error');
+                return;
+            }
+
+            log(`📤 Enviando: "${message}"`);
+            addMessage(message, true);
+            input.value = '';
+            updateStatus('Enviando mensagem...', 'info');
+
+            const payload = {
+                message: message,
+                project_id: 'neo4j-agent'
+            };
+
+            // Só adicionar session_id se existir
+            if (sessionId) {
+                payload.session_id = sessionId;
+            }
+
+            log(`Payload: ${JSON.stringify(payload)}`);
+
+            try {
+                const response = await fetch(`${API_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                log(`Response status: ${response.status}`);
+                log(`Response headers: ${JSON.stringify([...response.headers.entries()])}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                updateStatus('Recebendo resposta...', 'info');
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let fullResponse = '';
+
+                let streamBuffer = '';  // Buffer para acumular chunks de texto
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+
+                                // Log mais limpo baseado no tipo de evento
+                                if (data.type === 'session_created' && data.session_id) {
+                                    sessionId = data.session_id;
+                                    log(`📌 Sessão criada: ${sessionId}`, 'success');
+                                }
+                                else if (data.type === 'processing') {
+                                    log('⏳ Processando...', 'info');
+                                }
+                                else if (data.type === 'content' || data.type === 'text' || data.type === 'text_chunk') {
+                                    const content = data.content || data.text || '';
+                                    fullResponse += content;
+                                    streamBuffer += content;
+
+                                    // Mostra o buffer acumulado quando:
+                                    // - Tem mais de 80 caracteres
+                                    // - Tem quebra de linha
+                                    // - Termina com pontuação (. ! ? :)
+                                    const shouldFlush =
+                                        streamBuffer.length > 80 ||
+                                        content.includes('\n') ||
+                                        /[.!?:]$/.test(streamBuffer.trim()) ||
+                                        content.includes('##') ||  // Headers markdown
+                                        content.includes('**');     // Bold markdown
+
+                                    if (shouldFlush && streamBuffer.trim()) {
+                                        // Remove quebras de linha extras e formata
+                                        const formatted = streamBuffer
+                                            .replace(/\n+/g, ' ')
+                                            .replace(/\s+/g, ' ')
+                                            .trim();
+
+                                        // Detecta tipo de conteúdo para melhor formatação
+                                        if (formatted.includes('##')) {
+                                            log(`📌 ${formatted}`, 'success');
+                                        } else if (formatted.includes('**')) {
+                                            log(`✨ ${formatted}`, 'info');
+                                        } else if (formatted.startsWith('-') || formatted.startsWith('•')) {
+                                            log(`  ${formatted}`, 'info');
+                                        } else {
+                                            log(`💬 ${formatted}`, 'info');
+                                        }
+                                        streamBuffer = '';  // Limpa o buffer
+                                    }
+                                }
+                                else if (data.type === 'done') {
+                                    // Mostra qualquer resto do buffer
+                                    if (streamBuffer) {
+                                        log(`📝 Streaming: ${streamBuffer}`, 'info');
+                                        streamBuffer = '';
+                                    }
+                                    log('✅ Resposta completa', 'success');
+                                    break;
+                                }
+                                else if (data.type === 'error') {
+                                    log(`❌ Erro: ${data.error}`, 'error');
+                                    updateStatus('Erro na resposta', 'error');
+                                    break;
+                                }
+                                else if (data.type === 'result') {
+                                    // Ignora eventos de resultado (métricas)
+                                    continue;
+                                }
+                                else {
+                                    // Para outros tipos de evento, mostra resumido
+                                    log(`📡 ${data.type}`, 'info');
+                                }
+
+                            } catch (err) {
+                                log(`⚠️ Erro ao parsear: ${err.message}`, 'error');
+                            }
+                        }
+                    }
+                }
+
+                if (fullResponse) {
+                    addMessage(fullResponse, false);
+                    updateStatus('Resposta recebida', 'success');
+                } else {
+                    log('⚠️ Resposta vazia', 'error');
+                    updateStatus('Resposta vazia', 'error');
+                }
+
+            } catch (error) {
+                log(`❌ Erro: ${error.message}`, 'error');
+                log(`Stack: ${error.stack}`, 'error');
+                updateStatus(`Erro: ${error.message}`, 'error');
+                addMessage(`Erro: ${error.message}`, false);
+            }
+        }
+
+        function clearDebug() {
+            document.getElementById('debug').innerHTML = '[DEBUG] Console limpo';
+            document.getElementById('messages').innerHTML = '';
+            log('Console limpo');
+        }
+
+        // Enter para enviar
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Teste inicial
+        window.addEventListener('load', () => {
+            log('🚀 Página carregada');
+            testConnection();
+        });
+    </script>
+</body>
+</html>

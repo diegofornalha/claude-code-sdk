@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Chat interface for Neo4j Agent API with Claude SDK integration">
+    <meta name="keywords" content="neo4j, chat, ai, claude, agent, api">
+    <meta name="author" content="Neo4j Agent Team">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:3333/chat/">
+    <meta property="og:title" content="Neo4j Agent Chat">
+    <meta property="og:description" content="Chat interface for Neo4j Agent API with Claude SDK integration">
+    <!-- <meta property="og:image" content="/chat/og-image.png"> -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="http://localhost:3333/chat/">
+    <meta property="twitter:title" content="Neo4j Agent Chat">
+    <meta property="twitter:description" content="Chat interface for Neo4j Agent API with Claude SDK integration">
+    <!-- <meta property="twitter:image" content="/chat/twitter-image.png"> -->
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ff00">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Neo4j Chat">
+    <!-- <link rel="apple-touch-icon" href="icon-192.png"> -->
+
+    <!-- Performance -->
+    <link rel="dns-prefetch" href="http://localhost:8888">
+    <link rel="preconnect" href="http://localhost:8888">
+
+    <title>Neo4j Agent Chat</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+
+    <!-- Service Worker Cleanup and Prevention -->
+    <script>
+        // Desregistrar service workers existentes problemáticos
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    // Desregistrar todos os service workers
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const registration of registrations) {
+                        await registration.unregister();
+                        console.log('Service Worker removido:', registration.scope);
+                    }
+
+                    // Limpar caches antigos
+                    const cacheNames = await caches.keys();
+                    for (const cacheName of cacheNames) {
+                        await caches.delete(cacheName);
+                        console.log('Cache removido:', cacheName);
+                    }
+                } catch (error) {
+                    console.log('Limpeza de SW:', error);
+                }
+
+                // NÃO registrar novo service worker por enquanto
+                // Isso previne os erros 404
+                console.log('Service Workers desabilitados para prevenir erros');
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Neo4j Agent Chat</h1>
+
+        <div id="messages"></div>
+
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <input type="text" id="messageInput" placeholder="Digite sua mensagem..." style="flex: 1; max-width: 400px;">
+            <button onclick="sendMessage()">Enviar</button>
+            <button onclick="testConnection()">Testar API</button>
+        </div>
+
+        <div class="debug-panel" id="status">
+            [STATUS] Inicializando...
+        </div>
+
+        <div class="debug-panel" id="debug">
+            [DEBUG] Console de debug ativo
+        </div>
+    </div>
+</body>
+</html>

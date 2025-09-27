@@ -1,0 +1,36 @@
+# Dependências para testes
+
+# Framework de testes
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-timeout==2.2.0
+pytest-xdist==3.5.0  # Para testes paralelos
+
+# Cliente de teste
+httpx==0.25.2
+
+# Mocks e fixtures
+pytest-mock==3.12.0
+freezegun==1.4.0  # Mock de datas
+
+# Performance
+psutil==5.9.6  # Monitoramento de recursos
+locust==2.20.0  # Testes de carga avançados
+
+# Coverage
+coverage[toml]==7.4.0
+
+# Qualidade de código
+black==23.12.1
+flake8==7.0.0
+mypy==1.8.0
+pylint==3.0.3
+
+# Segurança
+bandit==1.7.6  # Scanner de segurança
+safety==3.0.1  # Verificar vulnerabilidades
+
+# Relatórios
+pytest-html==4.1.1  # Relatórios HTML
+allure-pytest==2.13.2  # Relatórios Allure

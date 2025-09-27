@@ -1,0 +1,1 @@
+"""Mocks reutilizáveis para testes."""

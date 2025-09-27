@@ -1,0 +1,63 @@
+{
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8888,
+    "debug": false,
+    "cors_origins": ["http://localhost:3333", "http://localhost:3000"],
+    "max_request_size": 10485760,
+    "rate_limit": {
+      "enabled": true,
+      "requests_per_minute": 60,
+      "burst_size": 10
+    }
+  },
+  "claude": {
+    "model": "claude-3-5-sonnet-latest",
+    "max_tokens": 4096,
+    "temperature": 0.7,
+    "timeout": 120,
+    "retry_attempts": 3,
+    "retry_delay": 1
+  },
+  "neo4j": {
+    "database": "neo4j",
+    "connection_pool_size": 50,
+    "max_connection_lifetime": 3600,
+    "connection_timeout": 30
+  },
+  "session": {
+    "timeout": 3600,
+    "max_history": 100,
+    "cleanup_interval": 300,
+    "storage_path": "api/sessions"
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "api/logs/app.log",
+    "max_size": 10485760,
+    "backup_count": 5,
+    "enable_telemetry": true
+  },
+  "security": {
+    "enable_validation": true,
+    "max_message_length": 4000,
+    "allowed_origins": ["http://localhost:3333"],
+    "enable_rate_limiting": true,
+    "enable_csrf_protection": false
+  },
+  "features": {
+    "enable_streaming": true,
+    "enable_memory": true,
+    "enable_analytics": true,
+    "enable_error_tracking": true,
+    "enable_auto_save": true
+  },
+  "performance": {
+    "enable_caching": true,
+    "cache_ttl": 300,
+    "enable_compression": true,
+    "worker_threads": 4,
+    "queue_size": 1000
+  }
+}

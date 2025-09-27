@@ -1,0 +1,50 @@
+{
+  "server": {
+    "workers": 16,
+    "worker_class": "uvicorn.workers.UvicornWorker",
+    "worker_connections": 2000,
+    "max_requests": 1000,
+    "max_requests_jitter": 100,
+    "timeout": 600,
+    "keep_alive": 75,
+    "graceful_timeout": 120,
+    "limit_concurrency": 1000,
+    "limit_max_requests": null,
+    "backlog": 2048
+  },
+  "async": {
+    "loop": "uvloop",
+    "use_poll": true,
+    "pool_size": 100,
+    "pool_recycle": 3600,
+    "pool_pre_ping": true,
+    "pool_timeout": 30,
+    "max_overflow": 200
+  },
+  "memory": {
+    "gc_threshold": [
+      700,
+      10,
+      10
+    ],
+    "gc_collect_cycles": 100,
+    "cache_size_mb": 512,
+    "cache_ttl": 300,
+    "read_buffer": 65536,
+    "write_buffer": 65536
+  },
+  "claude_handler": {
+    "max_concurrent_sessions": 50,
+    "connection_pool_size": 20,
+    "request_timeout": 300,
+    "max_requests_per_minute": 100,
+    "burst_size": 20
+  },
+  "neo4j": {
+    "max_connection_pool_size": 100,
+    "connection_acquisition_timeout": 60,
+    "max_transaction_retry_time": 30,
+    "fetch_size": 1000,
+    "database": "neo4j"
+  }
+}

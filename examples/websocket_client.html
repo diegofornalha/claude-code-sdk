@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client - Power User Mode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 1200px;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #dc3545;
+        }
+
+        .status-dot.connected {
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .panel h3 {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chat-area {
+            height: 300px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .message.user {
+            background: #007bff;
+            color: white;
+            margin-left: 20%;
+        }
+
+        .message.assistant {
+            background: #28a745;
+            color: white;
+            margin-right: 20%;
+        }
+
+        .message.system {
+            background: #ffc107;
+            color: #333;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .message.error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input, textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .command-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .command-btn {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .status-log {
+            height: 200px;
+            overflow-y: auto;
+            background: #2d2d2d;
+            color: #00ff00;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            border-radius: 5px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+
+        .log-entry.error {
+            color: #ff6b6b;
+        }
+
+        .log-entry.info {
+            color: #6bcf7f;
+        }
+
+        .log-entry.warn {
+            color: #ffd93d;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .metric {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 WebSocket Power User Client</h1>
+
+        <div class="status-bar">
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Desconectado</span>
+            </div>
+            <div>
+                <span id="sessionId">Session: -</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Painel Esquerdo: Chat e Controles -->
+            <div class="panel">
+                <h3>Chat & Controles</h3>
+
+                <div class="chat-area" id="chatArea"></div>
+
+                <div class="input-group">
+                    <input type="text" id="messageInput" placeholder="Digite sua mensagem..." disabled>
+                    <button onclick="sendMessage()" id="sendBtn" disabled>Enviar</button>
+                </div>
+
+                <h3 style="margin-top: 20px;">Comandos Rápidos</h3>
+                <div class="command-buttons">
+                    <button class="command-btn" onclick="sendCommand('add_context')" disabled>+ Contexto</button>
+                    <button class="command-btn" onclick="sendCommand('interrupt')" disabled>⏸ Interromper</button>
+                    <button class="command-btn" onclick="sendCommand('change_model')" disabled>🔄 Modelo</button>
+                    <button class="command-btn" onclick="sendCommand('toggle_neo4j')" disabled>🔌 Neo4j</button>
+                    <button class="command-btn" onclick="sendCommand('get_stats')" disabled>📊 Stats</button>
+                    <button class="command-btn" onclick="clearChat()">🗑 Limpar</button>
+                </div>
+
+                <h3>Contexto Adicional</h3>
+                <textarea id="contextInput" placeholder="Adicione contexto aqui..."></textarea>
+            </div>
+
+            <!-- Painel Direito: Status e Métricas -->
+            <div class="panel">
+                <h3>Status Stream</h3>
+                <div class="status-log" id="statusLog"></div>
+
+                <h3>Métricas em Tempo Real</h3>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="msgCount">0</div>
+                        <div class="metric-label">Mensagens</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="tokenCount">0</div>
+                        <div class="metric-label">Tokens</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="latency">0ms</div>
+                        <div class="metric-label">Latência</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 20px;">Conexão</h3>
+                <button onclick="connect()" id="connectBtn">Conectar WebSocket</button>
+                <button onclick="disconnect()" id="disconnectBtn" disabled>Desconectar</button>
+
+                <h3 style="margin-top: 20px;">SSE Status Stream</h3>
+                <button onclick="connectSSE()" id="sseBtn" disabled>Iniciar Status Stream</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let eventSource = null;
+        let sessionId = null;
+        let messageCount = 0;
+        let tokenCount = 0;
+        let lastMessageTime = null;
+        let isManualDisconnect = false;
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 10;
+
+        function generateSessionId() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function log(message, type = 'info') {
+            const statusLog = document.getElementById('statusLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            statusLog.appendChild(entry);
+            statusLog.scrollTop = statusLog.scrollHeight;
+        }
+
+        function addMessage(content, type = 'system') {
+            const chatArea = document.getElementById('chatArea');
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = content;
+            chatArea.appendChild(message);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function updateStatus(connected) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const buttons = document.querySelectorAll('button:not(#connectBtn):not(#disconnectBtn)');
+
+            if (connected) {
+                statusDot.classList.add('connected');
+                statusText.textContent = 'Conectado';
+                document.getElementById('messageInput').disabled = false;
+                document.getElementById('sendBtn').disabled = false;
+                document.getElementById('sseBtn').disabled = false;
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('disconnectBtn').disabled = false;
+
+                buttons.forEach(btn => {
+                    if (btn.classList.contains('command-btn')) {
+                        btn.disabled = false;
+                    }
+                });
+            } else {
+                statusDot.classList.remove('connected');
+                statusText.textContent = 'Desconectado';
+                document.getElementById('messageInput').disabled = true;
+                document.getElementById('sendBtn').disabled = true;
+                document.getElementById('sseBtn').disabled = true;
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = true;
+
+                buttons.forEach(btn => {
+                    if (btn.classList.contains('command-btn')) {
+                        btn.disabled = true;
+                    }
+                });
+            }
+        }
+
+        function connect() {
+            isManualDisconnect = false;
+            sessionId = generateSessionId();
+            document.getElementById('sessionId').textContent = `Session: ${sessionId.substring(0, 8)}...`;
+
+            const wsUrl = `ws://localhost:8888/ws/advanced/${sessionId}`;
+            log(`Conectando ao WebSocket: ${wsUrl}`, 'info');
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                log('WebSocket conectado!', 'info');
+                updateStatus(true);
+                addMessage('Conectado ao servidor WebSocket', 'system');
+                reconnectAttempts = 0; // Reset contador de tentativas
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+
+            ws.onerror = (error) => {
+                log(`Erro WebSocket: ${error}`, 'error');
+                addMessage('Erro na conexão WebSocket', 'error');
+            };
+
+            ws.onclose = () => {
+                log('WebSocket desconectado', 'warn');
+                updateStatus(false);
+
+                // Reconexão automática apenas se não foi desconexão manual
+                if (!isManualDisconnect && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                    reconnectAttempts++;
+                    const delay = Math.min(3000 * reconnectAttempts, 30000); // Max 30s
+                    addMessage(`Desconectado - Reconectando em ${delay/1000}s... (Tentativa ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, 'system');
+
+                    setTimeout(() => {
+                        if (!ws || ws.readyState === WebSocket.CLOSED) {
+                            log('Tentando reconectar...', 'info');
+                            connect();
+                        }
+                    }, delay);
+                } else if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+                    addMessage('Máximo de tentativas de reconexão atingido', 'error');
+                } else {
+                    addMessage('Desconectado do servidor', 'system');
+                }
+            };
+        }
+
+        function disconnect() {
+            // Flag para evitar reconexão automática
+            isManualDisconnect = true;
+            reconnectAttempts = 0;
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+        }
+
+        function handleWebSocketMessage(data) {
+            const now = Date.now();
+            if (lastMessageTime) {
+                const latency = now - lastMessageTime;
+                document.getElementById('latency').textContent = `${latency}ms`;
+            }
+
+            switch(data.type) {
+                case 'content':
+                    addMessage(data.content, 'assistant');
+                    tokenCount += data.content.split(' ').length;
+                    document.getElementById('tokenCount').textContent = tokenCount;
+                    break;
+                case 'processing':
+                    log('Claude está processando...', 'info');
+                    break;
+                case 'done':
+                    log('Resposta completa', 'info');
+                    break;
+                case 'error':
+                    log(`Erro: ${data.error}`, 'error');
+                    addMessage(`Erro: ${data.error}`, 'error');
+                    break;
+                default:
+                    log(`Mensagem: ${JSON.stringify(data)}`, 'info');
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message || !ws) return;
+
+            addMessage(message, 'user');
+            messageCount++;
+            document.getElementById('msgCount').textContent = messageCount;
+
+            lastMessageTime = Date.now();
+
+            ws.send(JSON.stringify({
+                type: 'query',
+                message: message
+            }));
+
+            input.value = '';
+            log(`Mensagem enviada: ${message}`, 'info');
+        }
+
+        function sendCommand(command) {
+            if (!ws) return;
+
+            let data = {};
+
+            switch(command) {
+                case 'add_context':
+                    const context = document.getElementById('contextInput').value;
+                    data = { context };
+                    break;
+                case 'change_model':
+                    data = { model: 'claude-3-opus-20240229' };
+                    break;
+                case 'toggle_neo4j':
+                    data = { enabled: true };
+                    break;
+            }
+
+            ws.send(JSON.stringify({
+                type: 'command',
+                command: command,
+                data: data
+            }));
+
+            log(`Comando enviado: ${command}`, 'info');
+        }
+
+        function clearChat() {
+            document.getElementById('chatArea').innerHTML = '';
+            addMessage('Chat limpo', 'system');
+        }
+
+        function connectSSE() {
+            if (!sessionId) return;
+
+            const sseUrl = `http://localhost:8888/api/stream/status/${sessionId}`;
+            log(`Conectando ao SSE: ${sseUrl}`, 'info');
+
+            eventSource = new EventSource(sseUrl);
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleSSEMessage(data);
+            };
+
+            eventSource.onerror = (error) => {
+                log('Erro no SSE stream', 'error');
+            };
+        }
+
+        function handleSSEMessage(data) {
+            switch(data.type) {
+                case 'connected':
+                    log('SSE Stream conectado', 'info');
+                    break;
+                case 'thinking':
+                    log('Claude está pensando...', 'info');
+                    break;
+                case 'neo4j_operation':
+                    log(`Neo4j: ${data.operation}`, 'info');
+                    break;
+                case 'processing':
+                    log(`Processando: ${data.step}`, 'info');
+                    if (data.progress) {
+                        log(`Progresso: ${Math.round(data.progress * 100)}%`, 'info');
+                    }
+                    break;
+                case 'heartbeat':
+                    // Heartbeat silencioso
+                    break;
+                default:
+                    log(`Status: ${JSON.stringify(data)}`, 'info');
+            }
+        }
+
+        // Enter para enviar mensagem
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Inicialização
+        log('Cliente WebSocket Power User pronto', 'info');
+
+        // Conectar automaticamente ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Conectando automaticamente...', 'info');
+            setTimeout(() => {
+                connect();
+            }, 500); // Pequeno delay para garantir que tudo está carregado
+        });
+    </script>
+</body>
+</html>
