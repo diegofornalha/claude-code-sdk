@@ -126,7 +126,7 @@ class SessionValidator:
             # Validações específicas por versão
             if uuid_obj.version == 4:
                 # UUID v4 deve ser aleatório
-                if normalized == '00000000-0000-4000-8888-000000000000':
+                if normalized == '00000000-0000-4000-8080-000000000000':
                     result['warnings'].append('UUID v4 parece ser um template, não aleatório')
             
             result['valid'] = True

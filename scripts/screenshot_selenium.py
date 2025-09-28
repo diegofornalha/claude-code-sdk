@@ -32,8 +32,8 @@ def capture_with_selenium():
 
         try:
             # Navega para a página
-            print("📍 Navegando para http://localhost:3333/")
-            driver.get("http://localhost:3333/")
+            print("📍 Navegando para http://localhost:8080/")
+            driver.get("http://localhost:8080/")
 
             # Aguarda a página carregar
             wait = WebDriverWait(driver, 10)

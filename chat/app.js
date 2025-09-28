@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    API_URL: 'http://localhost:8888',
+    API_URL: 'http://localhost:8080',
     RETRY_DELAYS: [1000, 2000, 4000, 8000],
     DEBOUNCE_DELAY: 300,
     MESSAGE_BATCH_SIZE: 10,
@@ -60,14 +60,17 @@ const Utils = {
 
 // Global variables
 let sessionId = null;
-let abortController = null;
-let isProcessingResponse = false;
-let responseTimeout = null;
+// Gerenciamento de múltiplas requisições simultâneas
+const activeRequests = new Map(); // Armazena requisições ativas por ID
+let requestIdCounter = 0; // Contador para IDs únicos
 let currentStreamingMessageDiv = null;
 
 // Initialize application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Neo4j Agent Chat - Modern JS loaded');
+
+    // Esconder botão cancelar inicialmente
+    updateActiveRequestsIndicator();
 
     // Initialize connection test
     testConnectionSilent();
@@ -119,10 +122,15 @@ function renderMarkdown(text) {
         .replace(/\n/g, '<br>');
 }
 
-function addMessage(content, isUser = false) {
+function addMessage(content, isUser = false, requestId = null) {
     const messagesDiv = document.getElementById('messages');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'info' : 'success'}`;
+
+    // Adicionar ID da requisição se fornecido
+    if (requestId) {
+        messageDiv.setAttribute('data-request-id', requestId);
+    }
 
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
@@ -231,16 +239,61 @@ async function copyMessage(text, button) {
     }
 }
 
-async function sendMessage() {
-    if (isProcessingResponse) {
-        log('⚠️ Aguarde a resposta anterior terminar', 'warn');
+// Função para atualizar indicador de requisições ativas
+function updateActiveRequestsIndicator() {
+    const count = activeRequests.size;
+    const button = document.querySelector('button[onclick="cancelAllRequests()"]');
+    if (button) {
+        if (count > 0) {
+            button.textContent = `⛔ Cancelar (${count})`;
+            button.style.display = 'inline-block';
+        } else {
+            button.textContent = '⛔ Cancelar';
+            button.style.display = 'none';
+        }
+    }
+}
+
+// Função para cancelar todas as requisições ativas
+function cancelAllRequests() {
+    if (activeRequests.size === 0) {
+        log('ℹ️ Nenhuma requisição ativa para cancelar');
+        updateStatus('Nenhuma requisição ativa', 'info');
         return;
     }
 
-    if (abortController && !isProcessingResponse) {
-        abortController.abort();
-        abortController = null;
-    }
+    const count = activeRequests.size;
+    log(`🛑 Cancelando ${count} requisição(ões) ativa(s)...`);
+
+    // Cancelar cada requisição
+    activeRequests.forEach((request, id) => {
+        if (request.abortController) {
+            request.abortController.abort();
+        }
+        if (request.timeout) {
+            clearTimeout(request.timeout);
+        }
+    });
+
+    // Limpar o Map
+    activeRequests.clear();
+
+    updateStatus(`${count} requisição(ões) cancelada(s)`, 'warn');
+    log(`✅ ${count} requisição(ões) cancelada(s) com sucesso`);
+    updateActiveRequestsIndicator();
+}
+
+async function sendMessage() {
+    // Permitir múltiplas mensagens simultâneas
+    const requestId = ++requestIdCounter;
+    const localAbortController = new AbortController();
+    let localResponseTimeout = null;
+
+    // Armazenar a requisição ativa
+    activeRequests.set(requestId, {
+        abortController: localAbortController,
+        timeout: null
+    });
 
     const input = document.getElementById('messageInput');
     let message = input.value.trim();
@@ -257,9 +310,13 @@ async function sendMessage() {
     }
 
     log(`📤 Enviando: "${message}"`);
-    addMessage(message, true);
+    addMessage(message, true, requestId);
     input.value = '';
-    updateStatus('Enviando mensagem...', 'info');
+    updateStatus(`Enviando mensagem #${requestId}...`, 'info');
+
+    // Mostrar número de requisições ativas
+    log(`📊 Requisições ativas: ${activeRequests.size}`);
+    updateActiveRequestsIndicator();
 
     currentStreamingMessageDiv = null;
 
@@ -275,17 +332,23 @@ async function sendMessage() {
     log(`Payload: ${JSON.stringify(payload)}`);
 
     try {
-        isProcessingResponse = true;
-        abortController = new AbortController();
+        // Cada requisição tem seu próprio AbortController
 
-        responseTimeout = setTimeout(() => {
-            if (abortController) {
+        localResponseTimeout = setTimeout(() => {
+            const request = activeRequests.get(requestId);
+            if (request && request.abortController) {
                 const timeoutMinutes = CONFIG.CONNECTION_TIMEOUT / (60 * 1000);
-                log(`⚠️ Timeout da resposta (${timeoutMinutes} min)`, 'warn');
-                abortController.abort();
-                isProcessingResponse = false;
+                log(`⚠️ Timeout da resposta #${requestId} (${timeoutMinutes} min)`, 'warn');
+                request.abortController.abort();
+                activeRequests.delete(requestId);
             }
         }, CONFIG.CONNECTION_TIMEOUT);
+
+        // Atualizar o timeout na requisição ativa
+        const request = activeRequests.get(requestId);
+        if (request) {
+            request.timeout = localResponseTimeout;
+        }
 
         const response = await fetch(`${CONFIG.API_URL}/api/chat`, {
             method: 'POST',
@@ -293,7 +356,7 @@ async function sendMessage() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload),
-            signal: abortController.signal
+            signal: localAbortController.signal
         });
 
         log(`Response status: ${response.status}`);
@@ -347,12 +410,14 @@ async function sendMessage() {
                                 updateStreamingMessage(fullResponse, false);
                             }
                             currentStreamingMessageDiv = null;
-                            isProcessingResponse = false;
 
-                            if (responseTimeout) {
-                                clearTimeout(responseTimeout);
-                                responseTimeout = null;
+                            // Limpar requisição específica
+                            const req = activeRequests.get(requestId);
+                            if (req && req.timeout) {
+                                clearTimeout(req.timeout);
                             }
+                            activeRequests.delete(requestId);
+                            updateActiveRequestsIndicator();
                             break;
                         }
                         else if (data.type === 'tool_use') {
@@ -401,12 +466,14 @@ async function sendMessage() {
             addMessage(`Erro: ${error.message}`, false);
         }
     } finally {
-        isProcessingResponse = false;
-        abortController = null;
-
-        if (responseTimeout) {
-            clearTimeout(responseTimeout);
-            responseTimeout = null;
+        // Limpar requisição específica
+        const req = activeRequests.get(requestId);
+        if (req) {
+            if (req.timeout) {
+                clearTimeout(req.timeout);
+            }
+            activeRequests.delete(requestId);
+            updateActiveRequestsIndicator();
         }
     }
 }

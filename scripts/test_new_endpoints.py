@@ -15,7 +15,7 @@ from datetime import datetime
 class APITester:
     """Classe para testar endpoints da API."""
 
-    def __init__(self, base_url: str = "http://localhost:8888"):
+    def __init__(self, base_url: str = "http://localhost:8080"):
         """
         Inicializa tester.
 
@@ -201,7 +201,7 @@ def main():
     # Permite especificar URL base via argumento
     import sys
 
-    base_url = "http://localhost:8888"
+    base_url = "http://localhost:8080"
     if len(sys.argv) > 1:
         base_url = sys.argv[1]
 

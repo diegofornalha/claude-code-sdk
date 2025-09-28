@@ -6,7 +6,7 @@ import time
 import json
 from datetime import datetime
 
-BASE_URL = "http://localhost:8888"
+BASE_URL = "http://localhost:8080"
 
 def test_cache():
     """Testa funcionalidades de cache"""
@@ -161,9 +161,9 @@ def main():
     try:
         # Verificar se servidor está rodando
         response = requests.get(f"{BASE_URL}/docs")
-        print("\n✅ Servidor está rodando na porta 8888")
+        print("\n✅ Servidor está rodando na porta 8080")
     except requests.exceptions.ConnectionError:
-        print("\n❌ ERRO: Servidor não está rodando na porta 8888")
+        print("\n❌ ERRO: Servidor não está rodando na porta 8080")
         print("   Execute: python3 server.py")
         return
 

@@ -23,7 +23,7 @@ gunicorn server:app \
     --max-requests-jitter 100 \
     --timeout 600 \
     --keep-alive 75 \
-    --bind 0.0.0.0:8888 \
+    --bind 0.0.0.0:8080 \
     --backlog 2048 \
     --access-logfile - \
     --error-logfile - \

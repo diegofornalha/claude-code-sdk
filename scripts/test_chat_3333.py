@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Testa o chat em http://localhost:3333/
+Testa o chat em http://localhost:8080/
 """
 
 import requests
@@ -9,14 +9,14 @@ import uuid
 import time
 
 def test_chat_interface():
-    """Testa a interface do chat na porta 3333."""
+    """Testa a interface do chat na porta 8080."""
 
-    print("🚀 TESTE DO CHAT EM http://localhost:3333/")
+    print("🚀 TESTE DO CHAT EM http://localhost:8080/")
     print("=" * 60)
 
     # Primeiro verifica se a página está acessível
     try:
-        response = requests.get("http://localhost:3333/")
+        response = requests.get("http://localhost:8080/")
         if response.status_code == 200:
             print("✅ Página do chat está acessível")
         else:
@@ -34,7 +34,7 @@ def test_chat_interface():
     print("\n1. Criando sessão...")
     try:
         session_response = requests.post(
-            "http://localhost:8888/api/sessions",
+            "http://localhost:8080/api/sessions",
             json={"session_id": session_id}
         )
         if session_response.status_code == 200:
@@ -50,7 +50,7 @@ def test_chat_interface():
     print("\n2. Enviando mensagem 'Oi'...")
     try:
         with requests.post(
-            "http://localhost:8888/api/chat",
+            "http://localhost:8080/api/chat",
             json={"message": "Oi", "session_id": session_id},
             stream=True,
             timeout=10
@@ -91,7 +91,7 @@ def test_chat_interface():
             if full_response:
                 print("\n✅ CHAT FUNCIONANDO PERFEITAMENTE!")
                 print(f"Resposta completa: {len(''.join(full_response))} caracteres")
-                print("\n🎯 Acesse http://localhost:3333/ no navegador")
+                print("\n🎯 Acesse http://localhost:8080/ no navegador")
                 print("   e clique em 'Enviar' para testar visualmente!")
             else:
                 print("⚠️ Nenhuma resposta recebida")

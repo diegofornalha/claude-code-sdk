@@ -12,14 +12,14 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="http://localhost:3333/chat/">
+    <meta property="og:url" content="http://localhost:8080/chat/">
     <meta property="og:title" content="Neo4j Agent Chat">
     <meta property="og:description" content="Chat interface for Neo4j Agent API with Claude SDK integration">
     <!-- <meta property="og:image" content="/chat/og-image.png"> -->
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="http://localhost:3333/chat/">
+    <meta property="twitter:url" content="http://localhost:8080/chat/">
     <meta property="twitter:title" content="Neo4j Agent Chat">
     <meta property="twitter:description" content="Chat interface for Neo4j Agent API with Claude SDK integration">
     <!-- <meta property="twitter:image" content="/chat/twitter-image.png"> -->
@@ -34,8 +34,8 @@
     <!-- <link rel="apple-touch-icon" href="icon-192.png"> -->
 
     <!-- Performance -->
-    <link rel="dns-prefetch" href="http://localhost:8888">
-    <link rel="preconnect" href="http://localhost:8888">
+    <link rel="dns-prefetch" href="http://localhost:8080">
+    <link rel="preconnect" href="http://localhost:8080">
 
     <title>Neo4j Agent Chat</title>
     <link rel="stylesheet" href="styles.css">
@@ -81,6 +81,7 @@
             <input type="text" id="messageInput" placeholder="Digite sua mensagem..." style="flex: 1; max-width: 400px;">
             <button onclick="sendMessage()">Enviar</button>
             <button onclick="testConnection()">Testar API</button>
+            <button onclick="cancelAllRequests()" style="background: #ff4444;" title="Cancelar todas as requisições">⛔ Cancelar</button>
         </div>
 
         <div class="debug-panel" id="status">

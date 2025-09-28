@@ -139,7 +139,7 @@ async def debug_flow():
             # Criar sessão
             print("Criando sessão via API...")
             async with session.post(
-                "http://localhost:8888/api/sessions",
+                "http://localhost:8080/api/sessions",
                 json={"session_id": session_id}
             ) as resp:
                 if resp.status == 200:
@@ -152,7 +152,7 @@ async def debug_flow():
             # Enviar mensagem
             print("Enviando mensagem via API...")
             async with session.post(
-                "http://localhost:8888/api/chat",
+                "http://localhost:8080/api/chat",
                 json={"message": "teste api", "session_id": session_id}
             ) as resp:
                 if resp.status == 200:

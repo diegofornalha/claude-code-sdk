@@ -44,5 +44,5 @@ if __name__ == "__main__":
     update_chat_timeout()
 
     print("\n💡 DICA: Para operações com muitos subagentes, use:")
-    print("  - WebSocket client: http://localhost:8888/examples/websocket_client.html")
+    print("  - WebSocket client: http://localhost:8080/examples/websocket_client.html")
     print("  - Ele não tem timeout e mantém conexão persistente!")

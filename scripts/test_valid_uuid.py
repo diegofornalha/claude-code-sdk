@@ -20,7 +20,7 @@ def test_with_valid_uuid():
     # 1. Cria sessão
     print("\n1. Criando sessão...")
     session_response = requests.post(
-        "http://localhost:8888/api/sessions",
+        "http://localhost:8080/api/sessions",
         json={"session_id": session_id}
     )
 
@@ -36,7 +36,7 @@ def test_with_valid_uuid():
 
     try:
         with requests.post(
-            "http://localhost:8888/api/chat",
+            "http://localhost:8080/api/chat",
             json={"message": "Oi", "session_id": session_id},
             stream=True,
             timeout=10

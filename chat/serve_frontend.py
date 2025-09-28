@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 🚀 Servidor do Frontend - Hackathon Flow Blockchain Agents
-Roda na porta 3333
+Roda na porta 8080
 """
 
 import http.server
@@ -9,7 +9,7 @@ import socketserver
 import os
 import sys
 
-PORT = 3333
+PORT = 8080
 # Detecta automaticamente o diretório onde o script está
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DIRECTORY = SCRIPT_DIR  # Serve arquivos do diretório atual
@@ -54,7 +54,7 @@ try:
                 print(f"   • {file}")
 
         print("=" * 60)
-        print("💡 Backend API deve estar rodando na porta 8888")
+        print("💡 Backend API deve estar rodando na porta 8080")
         print("🛑 Pressione Ctrl+C para parar")
         print("=" * 60)
         httpd.serve_forever()

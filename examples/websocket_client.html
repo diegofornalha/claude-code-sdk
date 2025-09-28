@@ -383,7 +383,7 @@
             sessionId = generateSessionId();
             document.getElementById('sessionId').textContent = `Session: ${sessionId.substring(0, 8)}...`;
 
-            const wsUrl = `ws://localhost:8888/ws/advanced/${sessionId}`;
+            const wsUrl = `ws://localhost:8080/ws/advanced/${sessionId}`;
             log(`Conectando ao WebSocket: ${wsUrl}`, 'info');
 
             ws = new WebSocket(wsUrl);
@@ -527,7 +527,7 @@
         function connectSSE() {
             if (!sessionId) return;
 
-            const sseUrl = `http://localhost:8888/api/stream/status/${sessionId}`;
+            const sseUrl = `http://localhost:8080/api/stream/status/${sessionId}`;
             log(`Conectando ao SSE: ${sseUrl}`, 'info');
 
             eventSource = new EventSource(sseUrl);

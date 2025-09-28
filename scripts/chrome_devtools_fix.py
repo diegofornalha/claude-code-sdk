@@ -8,7 +8,7 @@ Execute estes passos no Chrome:
 print("🔧 COMO RESOLVER OS ERROS DO SERVICE WORKER NO CHROME DEVTOOLS")
 print("=" * 60)
 print()
-print("📌 PASSO 1: Abra http://localhost:3333/ no Chrome")
+print("📌 PASSO 1: Abra http://localhost:8080/ no Chrome")
 print()
 print("📌 PASSO 2: Abra o DevTools (F12 ou Cmd+Option+I)")
 print()

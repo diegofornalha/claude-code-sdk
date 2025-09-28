@@ -15,7 +15,7 @@ async def test_chat():
     print("=" * 50)
 
     session_id = str(uuid.uuid4())
-    url = "http://localhost:8888/api/chat"
+    url = "http://localhost:8080/api/chat"
 
     print(f"📋 Session ID: {session_id}")
     print(f"🌐 URL: {url}")
@@ -24,7 +24,7 @@ async def test_chat():
 
     # Simula as ações do Chrome DevTools
     print("\n📱 SIMULAÇÃO CHROME DEVTOOLS:")
-    print("1. navigate_page('http://localhost:3333/')")
+    print("1. navigate_page('http://localhost:8080/')")
     print("2. wait_for('#messageInput')")
     print("3. fill('#messageInput', 'Oi')")
     print("4. click('#sendButton')")

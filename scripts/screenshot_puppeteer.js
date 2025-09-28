@@ -27,8 +27,8 @@ async function captureScreenshot() {
         });
 
         // Navega para a página
-        console.log('📍 Navegando para http://localhost:3333/');
-        await page.goto('http://localhost:3333/', {
+        console.log('📍 Navegando para http://localhost:8080/');
+        await page.goto('http://localhost:8080/', {
             waitUntil: 'networkidle2'
         });
 

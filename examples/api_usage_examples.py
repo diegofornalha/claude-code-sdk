@@ -13,7 +13,7 @@ from typing import Dict, Any
 class Neo4jAgentClient:
     """Cliente Python para API Neo4j Agent."""
 
-    def __init__(self, base_url: str = "http://localhost:8888"):
+    def __init__(self, base_url: str = "http://localhost:8080"):
         """
         Inicializa cliente.
 
@@ -374,7 +374,7 @@ def main():
     print("🚀 EXEMPLOS DE USO - API NEO4J AGENT")
     print("="*60)
     print("\nEstes exemplos demonstram como usar os novos endpoints.")
-    print("Certifique-se de que o servidor está rodando em localhost:8888")
+    print("Certifique-se de que o servidor está rodando em localhost:8080")
 
     # Executa exemplos
     example_1_graph_overview()

@@ -81,7 +81,7 @@
         <div class="chrome-actions">
             <h3>📱 Ações Chrome DevTools:</h3>
             <div id="actions">
-                <div class="action-item" data-action="navigate">1. navigate_page('http://localhost:3333/')</div>
+                <div class="action-item" data-action="navigate">1. navigate_page('http://localhost:8080/')</div>
                 <div class="action-item" data-action="wait">2. wait_for('#messageInput')</div>
                 <div class="action-item" data-action="fill">3. fill('#messageInput', 'Oi')</div>
                 <div class="action-item" data-action="click">4. click('#sendButton')</div>
@@ -123,7 +123,7 @@
             try {
                 // 1. Simula navigate_page
                 updateAction('navigate', 'active');
-                setStatus('📍 Navegando para http://localhost:3333/', 'info');
+                setStatus('📍 Navegando para http://localhost:8080/', 'info');
                 await new Promise(r => setTimeout(r, 500));
                 updateAction('navigate', 'done');
 
@@ -152,14 +152,14 @@
                 const sessionId = 'test-' + Date.now();
 
                 // Cria sessão
-                await fetch('http://localhost:8888/api/sessions', {
+                await fetch('http://localhost:8080/api/sessions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ session_id: sessionId })
                 });
 
                 // Envia mensagem
-                const response = await fetch('http://localhost:8888/api/chat', {
+                const response = await fetch('http://localhost:8080/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

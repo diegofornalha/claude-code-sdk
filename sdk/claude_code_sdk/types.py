@@ -271,7 +271,7 @@ class ClaudeCodeOptions:
     """Query options for Hackathon Flow Blockchain Agents."""
 
     allowed_tools: List[str] = field(default_factory=list)
-    max_thinking_tokens: int = 8888
+    max_thinking_tokens: int = 8080
     system_prompt: Optional[str] = None
     append_system_prompt: Optional[str] = None
     mcp_servers: Union[Dict[str, McpServerConfig], str, Path] = field(default_factory=dict)

@@ -253,7 +253,7 @@ gunicorn server:app \\
     --max-requests-jitter 100 \\
     --timeout 600 \\
     --keep-alive 75 \\
-    --bind 0.0.0.0:8888 \\
+    --bind 0.0.0.0:8080 \\
     --backlog 2048 \\
     --access-logfile - \\
     --error-logfile - \\
@@ -292,7 +292,7 @@ services:
 
     # Portas
     ports:
-      - "8888:8888"
+      - "8080:8080"
 
     # Ambiente
     environment:
@@ -314,7 +314,7 @@ services:
 
     # Health check
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

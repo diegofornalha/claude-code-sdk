@@ -17,7 +17,7 @@ echo ""
 echo "📨 Resposta do assistente:"
 echo "----------------------------------------"
 
-curl -N -X POST http://localhost:8888/api/chat \
+curl -N -X POST http://localhost:8080/api/chat \
   -H "Content-Type: application/json" \
   -d "{\"message\": \"Oi\", \"session_id\": \"$SESSION_ID\"}" \
   2>/dev/null | while IFS= read -r line; do

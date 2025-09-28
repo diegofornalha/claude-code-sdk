@@ -17,7 +17,7 @@ class StepByStepTester:
     """
 
     def __init__(self):
-        self.api_url = "http://localhost:8888"
+        self.api_url = "http://localhost:8080"
         self.results = []
         self.score = 0
         self.max_score = 100

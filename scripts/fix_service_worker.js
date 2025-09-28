@@ -1,6 +1,6 @@
 /**
  * Script para remover service workers problemáticos
- * Execute este código no Console do Chrome DevTools em http://localhost:3333/
+ * Execute este código no Console do Chrome DevTools em http://localhost:8080/
  */
 
 // Função para desregistrar todos os service workers

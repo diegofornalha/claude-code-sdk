@@ -12,7 +12,7 @@ async def test_websocket():
     """Testa conexão WebSocket com o servidor."""
 
     session_id = str(uuid.uuid4())
-    uri = f"ws://localhost:8888/ws/advanced/{session_id}"
+    uri = f"ws://localhost:8080/ws/advanced/{session_id}"
 
     print(f"🚀 Conectando ao WebSocket: {uri}")
     print("=" * 60)
@@ -87,7 +87,7 @@ async def test_websocket():
     except Exception as e:
         print(f"❌ Erro na conexão: {e}")
         print("\n💡 Verifique se:")
-        print("  1. O servidor está rodando em http://localhost:8888")
+        print("  1. O servidor está rodando em http://localhost:8080")
         print("  2. Os endpoints WebSocket estão configurados")
         print("  3. O handler WebSocket está importado corretamente")
 

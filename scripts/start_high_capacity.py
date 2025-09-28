@@ -65,7 +65,7 @@ import uvicorn
 uvicorn.run(
     server.app,
     host="0.0.0.0",
-    port=8888,
+    port=8080,
     workers=1,  # Use 1 worker por processo Python (inicie múltiplos processos se necessário)
     loop="auto",  # Usa uvloop se disponível
     limit_concurrency=1000,

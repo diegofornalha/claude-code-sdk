@@ -7,8 +7,8 @@ Sistema de chat inteligente com integração Neo4j e Claude SDK para processamen
 ### Iniciar o Sistema
 
 ```bash
-# Backend API (porta 3333)
-python3 -m uvicorn server:app --host 0.0.0.0 --port 3333 --reload
+# Backend API (porta 8080)
+python3 -m uvicorn server:app --host 0.0.0.0 --port 8080 --reload
 
 # Frontend Chat (porta 3000)
 cd chat && python3 -m http.server 3000
@@ -17,13 +17,13 @@ cd chat && python3 -m http.server 3000
 ## 📱 Acessar o Sistema
 
 - **Chat Interface**: http://localhost:3000
-- **API Backend**: http://localhost:3333
-- **API Docs (Swagger)**: http://localhost:3333/docs
+- **API Backend**: http://localhost:8080
+- **API Docs (Swagger)**: http://localhost:8080/docs
 
 ## 🏗️ Arquitetura
 
 ### Backend (FastAPI)
-- **Porta**: 3333
+- **Porta**: 8080
 - **Framework**: FastAPI com Uvicorn
 - **Funcionalidades**:
   - API RESTful para processamento de mensagens
@@ -73,7 +73,7 @@ cp .env.example .env
 ```env
 # API Configuration
 API_HOST=0.0.0.0
-API_PORT=3333
+API_PORT=8080
 
 # Neo4j Configuration (opcional)
 NEO4J_URI=bolt://localhost:7687
@@ -88,7 +88,7 @@ CLAUDE_API_KEY=your-api-key
 
 ### Testar Backend
 ```bash
-curl http://localhost:3333/docs
+curl http://localhost:8080/docs
 ```
 
 ### Testar Frontend
@@ -102,7 +102,7 @@ curl http://localhost:3000/index.html
 ps aux | grep -E "uvicorn|http.server"
 
 # Ver portas em uso
-lsof -i :3000,3333
+lsof -i :3000,8080
 ```
 
 ## 🔄 Gerenciamento de Serviços
@@ -123,7 +123,7 @@ pkill -f "uvicorn server:app"
 pkill -f "python3 -m http.server 3000"
 
 # Iniciar novamente
-python3 -m uvicorn server:app --host 0.0.0.0 --port 3333 --reload &
+python3 -m uvicorn server:app --host 0.0.0.0 --port 8080 --reload &
 cd chat && python3 -m http.server 3000 &
 ```
 
@@ -150,16 +150,16 @@ claude-code-sdk/
 ### Porta já em uso
 ```bash
 # Verificar processo usando a porta
-lsof -ti :3333  # ou :3000
+lsof -ti :8080  # ou :3000
 
 # Matar processo na porta
-lsof -ti :3333 | xargs kill -9
+lsof -ti :8080 | xargs kill -9
 ```
 
 ### Backend não inicia
 ```bash
 # Verificar logs
-python3 -m uvicorn server:app --host 0.0.0.0 --port 3333 --log-level debug
+python3 -m uvicorn server:app --host 0.0.0.0 --port 8080 --log-level debug
 ```
 
 ### Frontend não carrega
@@ -197,7 +197,7 @@ pytest tests/test_api.py
 ### Exemplo de Requisição
 
 ```bash
-curl -X POST http://localhost:3333/chat \
+curl -X POST http://localhost:8080/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "Olá, como posso ajudar?"}'
 ```
@@ -217,7 +217,7 @@ Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
 ## 💡 Suporte
 
 - Issues: [GitHub Issues](https://github.com/seu-usuario/seu-repo/issues)
-- Documentação: http://localhost:3333/docs
+- Documentação: http://localhost:8080/docs
 - Email: support@example.com
 
 ## 🎯 Roadmap

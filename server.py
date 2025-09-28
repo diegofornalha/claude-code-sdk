@@ -130,9 +130,9 @@ async def rate_limit_middleware(request: Request, call_next):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3333",
+        "http://localhost:8080",
         "http://localhost:3000",
-        "http://localhost:8888"
+        "http://localhost:8080"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE"],
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "server:app",
         host="0.0.0.0",
-        port=3333,
+        port=8080,
         reload=True,
         log_level="info"
     )

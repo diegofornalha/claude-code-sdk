@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 # URL base da API
-BASE_URL = "http://localhost:8888"
+BASE_URL = "http://localhost:8080"
 
 
 async def fetch_metrics_summary():

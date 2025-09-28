@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 class SecurityTester:
     """Classe para testar segurança da API"""
 
-    def __init__(self, base_url: str = "http://localhost:8888"):
+    def __init__(self, base_url: str = "http://localhost:8080"):
         self.base_url = base_url
         self.results: List[Dict] = []
 
@@ -259,7 +259,7 @@ class SecurityTester:
         print("-" * 70)
         print("⚠️  Teste de rate limiting desabilitado para não sobrecarregar o servidor")
         print("Para testar, execute o seguinte comando:")
-        print("  for i in {1..61}; do curl -X POST http://localhost:8888/api/chat -H 'Content-Type: application/json' -d '{\"message\":\"test\"}'; done")
+        print("  for i in {1..61}; do curl -X POST http://localhost:8080/api/chat -H 'Content-Type: application/json' -d '{\"message\":\"test\"}'; done")
         print()
 
         # 9. Teste de Tamanho Máximo
@@ -374,7 +374,7 @@ def main():
     print("Verificando se o servidor está online...")
 
     try:
-        response = requests.get("http://localhost:8888/api/health", timeout=5)
+        response = requests.get("http://localhost:8080/api/health", timeout=5)
         if response.status_code == 200:
             print("✅ Servidor online. Iniciando testes...\n")
         else:

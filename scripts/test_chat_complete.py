@@ -19,7 +19,7 @@ def test_chat_complete():
     print(f"📋 Criando sessão: {session_id}")
 
     # Primeiro, cria a sessão
-    create_url = "http://localhost:8888/api/sessions"
+    create_url = "http://localhost:8080/api/sessions"
     create_response = requests.post(
         create_url,
         json={"session_id": session_id}
@@ -35,8 +35,8 @@ def test_chat_complete():
     print("=" * 60)
 
     chrome_actions = [
-        ("new_page", "http://localhost:3333", "Abre nova aba"),
-        ("navigate_page", "http://localhost:3333/", "Navega para o chat"),
+        ("new_page", "http://localhost:8080", "Abre nova aba"),
+        ("navigate_page", "http://localhost:8080/", "Navega para o chat"),
         ("wait_for", "#messageInput", "Aguarda campo de mensagem"),
         ("fill", "#messageInput, 'Oi'", "Preenche campo com 'Oi'"),
         ("click", "#sendButton", "Clica no botão enviar"),
@@ -52,7 +52,7 @@ def test_chat_complete():
     print("\n📡 ENVIANDO MENSAGEM PARA API:")
     print("=" * 60)
 
-    chat_url = "http://localhost:8888/api/chat"
+    chat_url = "http://localhost:8080/api/chat"
     message = "Oi"
 
     print(f"URL: {chat_url}")

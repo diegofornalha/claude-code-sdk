@@ -5,7 +5,7 @@ echo "============================================="
 
 # 1. MATA SERVIDOR ATUAL
 echo "⏹️ Parando servidor atual..."
-lsof -ti:8888 | xargs kill -9 2>/dev/null
+lsof -ti:8080 | xargs kill -9 2>/dev/null
 sleep 2
 
 # 2. CONFIGURAÇÕES DE SISTEMA
@@ -52,7 +52,7 @@ if command -v gunicorn &> /dev/null; then
         --worker-connections 1000 \
         --timeout 600 \
         --keep-alive 75 \
-        --bind 0.0.0.0:8888 \
+        --bind 0.0.0.0:8080 \
         --log-level info
 else
     echo "⚠️ Gunicorn não encontrado, usando Python direto"

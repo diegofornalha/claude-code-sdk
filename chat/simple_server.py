@@ -18,7 +18,7 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-def run_server(port=3333):
+def run_server(port=8080):
     # Muda para o diretório do script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(script_dir)
@@ -30,7 +30,7 @@ def run_server(port=3333):
     print(f"🔗 Acesse: http://localhost:{port}")
     print(f"📁 Servindo arquivos de: {script_dir}")
     print("=" * 60)
-    print("💡 Backend API deve estar rodando na porta 8888")
+    print("💡 Backend API deve estar rodando na porta 8080")
     print("🛑 Pressione Ctrl+C para parar")
     print("=" * 60)
 
@@ -45,7 +45,7 @@ def run_server(port=3333):
             print(f"\n❌ Porta {port} já está em uso!")
             print("Tentando porta alternativa...")
             # Tenta portas alternativas
-            for alt_port in [3333, 3003, 8080, 8888]:
+            for alt_port in [8080, 3003, 8080, 8080]:
                 try:
                     print(f"Tentando porta {alt_port}...")
                     with HTTPServer(('localhost', alt_port), CORSRequestHandler) as httpd:

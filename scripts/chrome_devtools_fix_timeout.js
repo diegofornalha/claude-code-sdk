@@ -2,7 +2,7 @@
  * CÓDIGO PARA EXECUTAR NO CHROME DEVTOOLS
  *
  * Como usar:
- * 1. Abra http://localhost:3333/ no Chrome
+ * 1. Abra http://localhost:8080/ no Chrome
  * 2. Pressione F12 para abrir DevTools
  * 3. Vá para aba Console
  * 4. Cole e execute este código

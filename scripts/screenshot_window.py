@@ -33,7 +33,7 @@ def find_browser_window():
         # Verifica se é um navegador
         if owner_name in browser_apps:
             # Verifica se tem localhost no título
-            if 'localhost' in window_name or 'Chat' in window_name or '3333' in window_name or '8888' in window_name:
+            if 'localhost' in window_name or 'Chat' in window_name or '8080' in window_name or '8080' in window_name:
                 browser_windows.append({
                     'app': owner_name,
                     'title': window_name,

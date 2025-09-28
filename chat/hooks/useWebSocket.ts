@@ -15,7 +15,7 @@ export const useWebSocket = ({
   onConnect,
   onDisconnect,
   onError,
-  reconnectInterval = 3333
+  reconnectInterval = 8080
 }: UseWebSocketOptions) => {
   const [isConnected, setIsConnected] = useState(false);
   const [lastMessage, setLastMessage] = useState<any>(null);

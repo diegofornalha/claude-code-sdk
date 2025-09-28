@@ -49,9 +49,9 @@ class ConfigManager:
         return {
             "api": {
                 "host": "0.0.0.0",
-                "port": 8888,
+                "port": 8080,
                 "debug": False,
-                "cors_origins": ["http://localhost:3333", "http://localhost:3000"],
+                "cors_origins": ["http://localhost:8080", "http://localhost:3000"],
                 "max_request_size": 10485760,  # 10MB
                 "rate_limit": {
                     "enabled": True,
@@ -93,7 +93,7 @@ class ConfigManager:
             "security": {
                 "enable_validation": True,
                 "max_message_length": 4000,
-                "allowed_origins": ["http://localhost:3333"],
+                "allowed_origins": ["http://localhost:8080"],
                 "enable_rate_limiting": True,
                 "enable_csrf_protection": False,
                 "session_secret": os.getenv("SESSION_SECRET", "change-me-in-production")

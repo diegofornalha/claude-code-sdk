@@ -17,8 +17,8 @@ async def capture_screenshot():
             page = await browser.new_page()
 
             # Navega para a página
-            print("Navegando para http://localhost:8888/test...")
-            await page.goto("http://localhost:8888/test")
+            print("Navegando para http://localhost:8080/test...")
+            await page.goto("http://localhost:8080/test")
 
             # Aguarda a página carregar
             await page.wait_for_load_state("networkidle")
@@ -46,7 +46,7 @@ async def capture_screenshot():
         import webbrowser
         import time
 
-        url = "http://localhost:8888/test"
+        url = "http://localhost:8080/test"
         print(f"Abrindo {url} no navegador...")
         webbrowser.open(url)
 

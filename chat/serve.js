@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
  * 🚀 Servidor do Frontend - Hackathon Flow Blockchain Agents
- * Roda na porta 3333
+ * Roda na porta 8080
  */
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3333;
+const PORT = 8080;
 const DIRECTORY = __dirname;
 
 const mimeTypes = {
@@ -74,7 +74,7 @@ server.listen(PORT, () => {
     console.log(`🔗 Acesse: http://localhost:${PORT}`);
     console.log(`📁 Servindo de: ${DIRECTORY}`);
     console.log('='.repeat(60));
-    console.log('💡 Backend API deve estar rodando na porta 8888');
+    console.log('💡 Backend API deve estar rodando na porta 8080');
     console.log('🛑 Pressione Ctrl+C para parar');
     console.log('='.repeat(60));
 });

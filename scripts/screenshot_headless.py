@@ -58,8 +58,8 @@ def capture_chat_screenshot():
         print("✅ Driver inicializado")
 
         # Navega para a página
-        print("📍 Navegando para http://localhost:3333/")
-        driver.get("http://localhost:3333/")
+        print("📍 Navegando para http://localhost:8080/")
+        driver.get("http://localhost:8080/")
 
         # Aguarda a página carregar
         wait = WebDriverWait(driver, 10)
@@ -77,7 +77,7 @@ def capture_chat_screenshot():
         print("💬 Enviando mensagem de teste...")
         driver.execute_script(f"""
             // Cria sessão
-            fetch('http://localhost:8888/api/sessions', {{
+            fetch('http://localhost:8080/api/sessions', {{
                 method: 'POST',
                 headers: {{ 'Content-Type': 'application/json' }},
                 body: JSON.stringify({{ session_id: '{session_id}' }})
