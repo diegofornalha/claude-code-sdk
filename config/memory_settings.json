@@ -1,0 +1,39 @@
+{
+    "neo4j_memory": {
+        "enabled": true,
+        "features": {
+            "context_enrichment": {
+                "enabled": true,
+                "max_memories": 5,
+                "max_patterns": 3,
+                "include_user_profile": true
+            },
+            "interaction_saving": {
+                "enabled": true,
+                "save_all_messages": false,
+                "min_message_length": 10,
+                "extract_entities": true
+            },
+            "user_recognition": {
+                "enabled": true,
+                "persist_names": true,
+                "track_preferences": true
+            }
+        },
+        "connection": {
+            "uri": "bolt://localhost:7687",
+            "username": "neo4j",
+            "password": "12345678",
+            "database": "neo4j",
+            "max_lifetime_seconds": 3600,
+            "retry_attempts": 3,
+            "retry_delay_ms": 1000
+        },
+        "performance": {
+            "cache_context": true,
+            "cache_ttl_seconds": 300,
+            "async_save": true,
+            "batch_size": 10
+        }
+    }
+}

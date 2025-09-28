@@ -569,7 +569,19 @@ function displaySession(sessionId, jsonlData) {
 
         const timestamp = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString('pt-BR') : '';
 
-        if (msg.role === 'user') {
+        if (msg.isCompaction) {
+            // Mensagem de compactação - destaque especial
+            messageDiv.style.background = 'linear-gradient(90deg, #1a1a1a, #0d4f0d, #1a1a1a)';
+            messageDiv.style.border = '2px dashed #00ff00';
+            messageDiv.style.padding = '15px';
+            messageDiv.style.margin = '20px 0';
+
+            const renderedContent = renderMarkdown(msg.content);
+            contentDiv.innerHTML = `
+                <span style="color: #ffff00; font-size: 1.1em;">⚡ SISTEMA ${timestamp ? `- ${timestamp}` : ''}:</span><br>
+                ${renderedContent}
+            `;
+        } else if (msg.role === 'user') {
             // Para usuário, mostra mensagem com escape HTML básico
             const escapedContent = msg.content
                 .replace(/&/g, '&amp;')
@@ -652,6 +664,15 @@ function parseJSONL(jsonlData) {
                         tokens: tokens
                     });
                 }
+            } else if (entry.type === 'summary') {
+                // Marca quando houve uma compactação da conversa
+                messages.push({
+                    id: entry.uuid || 'summary-' + Date.now(),
+                    role: 'system',
+                    content: `📦 **Conversa Compactada**: "${entry.summary}"\n\n*A conversa foi compactada mas continua no mesmo session ID. Todas as mensagens anteriores foram resumidas acima.*`,
+                    timestamp: entry.timestamp,
+                    isCompaction: true
+                });
             }
         } catch (e) {
             // Ignora linhas inválidas

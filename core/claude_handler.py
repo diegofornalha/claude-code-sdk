@@ -20,8 +20,9 @@ from utils.logging_config import get_contextual_logger
 from middleware.exception_middleware import handle_errors
 from core.session_manager import ClaudeCodeSessionManager
 from core.error_handler import SmartErrorHandler, ErrorContext, smart_error_handler
+from core.neo4j_memory_integration import get_memory_integration
 
-# Adiciona o diretório do SDK ao path  
+# Adiciona o diretório do SDK ao path
 sdk_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sdk')
 sys.path.insert(0, sdk_dir)
 
@@ -256,7 +257,7 @@ class ClaudeHandler:
         force_unified: bool = False,  # Permite desabilitar para múltiplas sessões
         timeout: float = 300.0  # Timeout de 5 minutos para suportar ferramentas/subagents
     ) -> AsyncGenerator[Dict[str, Any], None]:
-        """Envia mensagem e retorna stream de respostas com suporte a múltiplas sessões."""
+        """Envia mensagem e retorna stream de respostas com suporte a múltiplas sessões e memória persistente."""
 
         # Permite múltiplas sessões OU força unificada se necessário
         if force_unified:
@@ -273,6 +274,37 @@ class ClaudeHandler:
         # Usa o session_id real (não mais forçado)
         client = self.clients[session_id]
 
+        # Integração com Neo4j Memory
+        memory_integration = None
+        neo4j_context = {}
+        try:
+            memory_integration = await get_memory_integration()
+            # Busca contexto relevante do Neo4j
+            neo4j_context = await memory_integration.get_user_context(query=message)
+
+            # Se encontrou contexto do usuário, adiciona ao prompt
+            if neo4j_context and (neo4j_context.get("user_profile") or neo4j_context.get("relevant_memories")):
+                context_prompt = memory_integration.format_context_for_prompt(neo4j_context)
+                if context_prompt:
+                    # Adiciona contexto à mensagem
+                    enriched_message = f"{context_prompt}{message}"
+                    self.logger.info(
+                        "Contexto Neo4j adicionado à mensagem",
+                        extra={
+                            "event": "neo4j_context_added",
+                            "session_id": session_id,
+                            "has_user_profile": bool(neo4j_context.get("user_profile")),
+                            "memories_count": len(neo4j_context.get("relevant_memories", []))
+                        }
+                    )
+                else:
+                    enriched_message = message
+            else:
+                enriched_message = message
+        except Exception as e:
+            self.logger.warning(f"Erro ao buscar contexto Neo4j: {e}")
+            enriched_message = message
+
         try:
             # Notifica que começou a processar
             yield {
@@ -280,14 +312,17 @@ class ClaudeHandler:
                 "session_id": session_id
             }
 
-            # Envia query com timeout
+            # Envia query com timeout (usa mensagem enriquecida com contexto)
             await asyncio.wait_for(
-                client.query(message, session_id=session_id),
+                client.query(enriched_message, session_id=session_id),
                 timeout=timeout
             )
             
             # Define real_session_id no início do processamento
             real_session_id = session_id
+
+            # Acumula a resposta completa para salvar no Neo4j
+            full_assistant_response = ""
 
             # SIMPLIFICADO - Recebe resposta e envia em chunks
             async for msg in client.receive_response():
@@ -302,6 +337,9 @@ class ClaudeHandler:
                                 text = " ".join(str(item) for item in text)
                             elif not isinstance(text, str):
                                 text = str(text)
+
+                            # Acumula resposta completa
+                            full_assistant_response += text
 
                             # Divide em pequenos pedaços e envia
                             words = text.split()
@@ -417,7 +455,27 @@ class ClaudeHandler:
                         
                     yield result_data
                     break
-                    
+
+            # Salva a conversa no Neo4j após receber resposta completa
+            if memory_integration and full_assistant_response:
+                try:
+                    await memory_integration.save_interaction(
+                        user_message=message,  # Usa mensagem original, não enriquecida
+                        assistant_response=full_assistant_response,
+                        session_id=real_session_id
+                    )
+                    self.logger.info(
+                        "Conversa salva no Neo4j",
+                        extra={
+                            "event": "neo4j_interaction_saved",
+                            "session_id": real_session_id,
+                            "message_length": len(message),
+                            "response_length": len(full_assistant_response)
+                        }
+                    )
+                except Exception as e:
+                    self.logger.warning(f"Erro ao salvar conversa no Neo4j: {e}")
+
         except Exception as e:
             # Atualiza métricas de erro
             try:
