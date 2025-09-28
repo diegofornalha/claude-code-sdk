@@ -1,0 +1,26 @@
+{
+  "total_time": 2.9295461177825928,
+  "results": [
+    {
+      "script": "test_parallel_1.py",
+      "success": true,
+      "elapsed_time": 1.4221508502960205,
+      "output": "Iniciando processamento paralelo 1...\nResultado paralelo 1: 499999500000\n",
+      "error": ""
+    },
+    {
+      "script": "test_parallel_3.py",
+      "success": true,
+      "elapsed_time": 2.0315327644348145,
+      "output": "Iniciando c\u00e1lculo de primos...\nPrimos encontrados: 25\n",
+      "error": ""
+    },
+    {
+      "script": "test_parallel_2.py",
+      "success": true,
+      "elapsed_time": 2.9292478561401367,
+      "output": "Iniciando an\u00e1lise paralelo 2...\nPalavras analisadas: 401\n",
+      "error": ""
+    }
+  ]
+}
