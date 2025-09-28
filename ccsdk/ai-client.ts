@@ -5,9 +5,11 @@
 
 // Imports CORRETOS do Claude Code SDK
 import { query, ClaudeCodeOptions } from '@anthropic-ai/claude-code';
+import { conversationManager } from './conversation-manager';
 
 export class AIClient {
   private options: ClaudeCodeOptions;
+  private sessionId: string | null = null;
 
   constructor() {
     // Configurações CORRETAS do Claude
@@ -24,6 +26,14 @@ export class AIClient {
         'mcp__neo4j-memory__suggest_best_approach'
       ]
     };
+
+    // Inicializar sessão de conversa
+    this.initializeSession();
+  }
+
+  private async initializeSession() {
+    this.sessionId = await conversationManager.startSession();
+    console.log('📝 Sessão de conversa iniciada:', this.sessionId);
   }
 
   private getSystemPrompt(): string {
@@ -67,17 +77,31 @@ Always maintain focus on the bootcamp progress and practical application.
    */
   async processKnowledgeQuery(queryText: string, context?: any) {
     try {
+      // Registrar mensagem do usuário no histórico
+      await conversationManager.addMessage('user', queryText, {
+        context,
+        timestamp: new Date().toISOString()
+      });
+
       // Buscar contexto relevante no Neo4j
       const relevantContext = await this.searchRelevantKnowledge(queryText);
 
       // Adicionar contexto do bootcamp
       const bootcampContext = this.getBootcampContext();
 
+      // Buscar mensagens recentes da sessão
+      const recentMessages = await conversationManager.getSessionMessages(this.sessionId!);
+      const historyContext = recentMessages.slice(-5).map(msg => ({
+        role: msg.role,
+        content: msg.content.substring(0, 100) + '...'
+      }));
+
       // Construir prompt completo
       const fullPrompt = `
 Context:
 - Relevant Knowledge: ${JSON.stringify(relevantContext)}
 - Bootcamp Status: ${JSON.stringify(bootcampContext)}
+- Recent History: ${JSON.stringify(historyContext)}
 - Additional Context: ${JSON.stringify(context || {})}
 
 User Query: ${queryText}
@@ -87,15 +111,24 @@ Please provide a helpful response focused on the bootcamp progress.
 
       // Usar query() CORRETAMENTE
       const responses: string[] = [];
+      let tokenCount = 0;
 
       // query() retorna um AsyncGenerator
       for await (const message of query(fullPrompt, this.options)) {
         if (message.result) {
           responses.push(message.result);
+          tokenCount += message.result.split(' ').length; // Estimativa simples
         }
       }
 
       const response = responses.join('\n');
+
+      // Registrar resposta do assistente no histórico
+      await conversationManager.addMessage('assistant', response, {
+        tokens: tokenCount,
+        model: 'claude-3',
+        timestamp: new Date().toISOString()
+      });
 
       // Registrar aprendizado
       await this.recordLearning(queryText, response);
@@ -103,6 +136,13 @@ Please provide a helpful response focused on the bootcamp progress.
       return response;
     } catch (error) {
       console.error('Error processing query:', error);
+
+      // Registrar erro no histórico
+      await conversationManager.addMessage('system', `Error: ${error}`, {
+        error: true,
+        timestamp: new Date().toISOString()
+      });
+
       throw error;
     }
   }

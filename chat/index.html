@@ -39,7 +39,7 @@
 
     <title>Neo4j Agent Chat</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="app-no-limit.js" defer></script>
+    <script src="app-unified.js" defer></script>
 
     <!-- Service Worker Cleanup and Prevention -->
     <script>
@@ -72,6 +72,56 @@
     </script>
 </head>
 <body>
+    <!-- Scripts unificados no app-unified.js -->
+    <script>
+        // Modo de operação detectado automaticamente
+        window.addEventListener('DOMContentLoaded', () => {
+            const path = window.location.pathname;
+
+            // Se tem UUID na URL, carrega o leitor de sessões
+            if (path.match(/[a-f0-9-]{36}/)) {
+                // Desativa o chat normal
+                document.getElementById('messageInput')?.setAttribute('disabled', 'true');
+                document.getElementById('messageInput')?.setAttribute('placeholder', '🔒 Modo visualização de sessão');
+
+                // Ativa o leitor
+                if (window.claudeReader) {
+                    window.claudeReader.initFromURL();
+                }
+            }
+            // Se é a raiz, mostra lista de sessões
+            else if (path === '/' && window.claudeReader) {
+                // Adiciona botão para ver sessões
+                const container = document.querySelector('.container');
+                if (container && !document.getElementById('session-selector')) {
+                    const selector = document.createElement('div');
+                    selector.id = 'session-selector';
+                    selector.style.cssText = `
+                        padding: 10px;
+                        background: rgba(0, 255, 0, 0.1);
+                        border: 1px solid #00ff00;
+                        margin-bottom: 15px;
+                        text-align: center;
+                    `;
+                    selector.innerHTML = `
+                        <button onclick="window.claudeReader.initFromURL()" style="
+                            background: #00ff00;
+                            color: #000;
+                            padding: 8px 20px;
+                            border: none;
+                            cursor: pointer;
+                            font-weight: bold;
+                            margin-right: 10px;
+                        ">📁 Ver Sessões do Claude SDK</button>
+                        <span style="color: #999; font-size: 12px;">
+                            ou continue conversando normalmente abaixo
+                        </span>
+                    `;
+                    container.insertBefore(selector, container.firstChild.nextSibling);
+                }
+            }
+        });
+    </script>
     <div class="container">
         <h1>🔧 Neo4j Agent Chat</h1>
 
