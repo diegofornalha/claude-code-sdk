@@ -1,4 +1,4 @@
-"""Utility functions and helpers for Hackathon Flow Blockchain Agents."""
+"""Utility functions and helpers for Claude Code SDK Bootcamp."""
 
 import asyncio
 import time
@@ -34,7 +34,7 @@ class RetryConfig:
 
 
 class InputValidator:
-    """Validates inputs for Hackathon Flow Blockchain Agents operations."""
+    """Validates inputs for Claude Code SDK Bootcamp operations."""
     
     @staticmethod
     def validate_prompt(prompt: str, max_length: int = 100000) -> str:

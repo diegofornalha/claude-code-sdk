@@ -25,7 +25,7 @@ except ImportError:
     pass
 
 app = FastAPI(
-    title="Hackathon Flow Blockchain Agents Bridge",
+    title="Claude Code SDK Bootcamp Bridge",
     description="Bridge HTTP para Claude Code SDK",
     version="1.0.0"
 )
@@ -46,7 +46,7 @@ async def health_check():
     """Verifica status da bridge"""
     return {
         "status": "healthy",
-        "bridge": "Hackathon Flow Blockchain Agents Bridge",
+        "bridge": "Claude Code SDK Bootcamp Bridge",
         "sdk_available": SDK_AVAILABLE,
         "timestamp": datetime.now().isoformat()
     }
@@ -122,7 +122,7 @@ async def chat_bridge(message: str, sessionId: str = "new"):
 
                 yield f"data: {json.dumps({'type': 'session_created', 'session_id': session_id, 'mode': 'demo'})}\n\n"
 
-                demo_response = f"""Bridge Hackathon Flow Blockchain Agents: Mensagem "{message}" recebida.
+                demo_response = f"""Bridge Claude Code SDK Bootcamp: Mensagem "{message}" recebida.
 
 ⚠️ SDK não disponível neste ambiente. Para usar o Claude Code SDK real:
 
@@ -200,7 +200,7 @@ async def get_architecture():
     """Retorna diagrama da arquitetura da bridge"""
     return {
         "architecture": """
-        ┌──────────────┐     HTTP/SSE      ┌──────────────┐     Hackathon Flow Blockchain Agents    ┌──────────────┐
+        ┌──────────────┐     HTTP/SSE      ┌──────────────┐     Claude Code SDK Bootcamp    ┌──────────────┐
         │              │ ─────────────────> │              │ ───────────────> │              │
         │   Browser    │                    │   Bridge     │                  │  Claude AI   │
         │   (React)    │ <───────────────── │   (FastAPI)  │ <─────────────── │   (Real)     │
@@ -227,7 +227,7 @@ if __name__ == "__main__":
     import uvicorn
 
     print("=" * 80)
-    print("🌉 Hackathon Flow Blockchain Agents BRIDGE - Conectando Web ao Claude Code SDK")
+    print("🌉 Claude Code SDK Bootcamp BRIDGE - Conectando Web ao Claude Code SDK")
     print("=" * 80)
 
     if SDK_AVAILABLE:

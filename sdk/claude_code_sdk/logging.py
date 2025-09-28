@@ -1,4 +1,4 @@
-"""Advanced logging system for Hackathon Flow Blockchain Agents.
+"""Advanced logging system for Claude Code SDK Bootcamp.
 
 This module provides structured logging with:
 - Multiple output formats (JSON, plain text, colored)
@@ -208,7 +208,7 @@ class SensitiveDataFilter:
 
 
 class StructuredLogger:
-    """Main structured logger for Hackathon Flow Blockchain Agents."""
+    """Main structured logger for Claude Code SDK Bootcamp."""
     
     def __init__(
         self,

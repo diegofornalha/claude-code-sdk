@@ -1,4 +1,4 @@
-"""Rate limiting and retry management for Hackathon Flow Blockchain Agents.
+"""Rate limiting and retry management for Claude Code SDK Bootcamp.
 
 This module provides sophisticated rate limiting with:
 - Token bucket algorithm

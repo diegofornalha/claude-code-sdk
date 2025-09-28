@@ -1,4 +1,4 @@
-"""Hackathon Flow Blockchain Agents para Python."""
+"""Claude Code SDK Bootcamp para Python."""
 
 from collections.abc importar Awaitable, Callable
 from dataclasses importar dataclass

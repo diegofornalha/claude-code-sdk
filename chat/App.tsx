@@ -182,7 +182,7 @@ const App: React.FC = () => {
               <div className="timeline-item completed">
                 <div className="timeline-marker">✅</div>
                 <div className="timeline-content">
-                  <h3>Dia 1-2: Fundamentos Hackathon Flow Blockchain Agents</h3>
+                  <h3>Dia 1-2: Fundamentos Claude Code SDK Bootcamp</h3>
                   <p>✅ query() function básica<br/>
                   ✅ ClaudeCodeOptions config<br/>
                   ✅ async/await patterns<br/>
@@ -292,7 +292,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="app-footer">
-        <p>Neo4j Knowledge Agent © 2024 | Bootcamp Hackathon Flow Blockchain Agents | Score: {bootcampData.score}/100</p>
+        <p>Neo4j Knowledge Agent © 2024 | Bootcamp Claude Code SDK Bootcamp | Score: {bootcampData.score}/100</p>
       </footer>
     </div>
   );

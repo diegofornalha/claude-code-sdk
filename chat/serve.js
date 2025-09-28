@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 🚀 Servidor do Frontend - Hackathon Flow Blockchain Agents
+ * 🚀 Servidor do Frontend - Claude Code SDK Bootcamp
  * Roda na porta 8080
  */
 
@@ -68,7 +68,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
     console.log('='.repeat(60));
-    console.log('🔧 HACKATHON FLOW BLOCKCHAIN AGENTS - FRONTEND');
+    console.log('🔧 Claude Code SDK Bootcamp - FRONTEND');
     console.log('='.repeat(60));
     console.log(`📡 Servidor rodando na porta ${PORT}`);
     console.log(`🔗 Acesse: http://localhost:${PORT}`);

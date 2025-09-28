@@ -71,7 +71,7 @@ temp/
 *.backup
 *.bak
 
-# Hackathon Flow Blockchain Agents
+# Claude Code SDK Bootcamp
 .claude/
 claude-sessions/
 claude-flow/

@@ -1,4 +1,4 @@
-"""Connection pooling para Hackathon Flow Blockchain Agents.
+"""Connection pooling para Claude Code SDK Bootcamp.
 
 This módulo provides connection pooling para improved performance:
 - Reusable transport connections
@@ -439,7 +439,7 @@ class ConnectionPool(Generic[T]):
 
 
 classe ClaudeConnectionPool(ConnectionPool):
-    """Connection pool specifically for Hackathon Flow Blockchain Agents transports."""
+    """Connection pool specifically for Claude Code SDK Bootcamp transports."""
     
     def __init__(
         self,
@@ -451,7 +451,7 @@ classe ClaudeConnectionPool(ConnectionPool):
         """Initialize Claude connection pool.
         
         Args:
-            Opções: Hackathon Flow Blockchain Agents Opções
+            Opções: Claude Code SDK Bootcamp Opções
             min_size: Minimum pool size
             max_size: Maximum pool size
             **kwargs: Additional pool Configuração
@@ -509,7 +509,7 @@ def get_global_pool(Opções: Optional[ClaudeCodeOptions] = None) -> ClaudeConne
     """Get or create global connection pool.
     
     Args:
-        options: Hackathon Flow Blockchain Agents options (required on first call)
+        options: Claude Code SDK Bootcamp options (required on first call)
         
     Returns:
         Global connection pool

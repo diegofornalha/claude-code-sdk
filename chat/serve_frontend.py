@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 Servidor do Frontend - Hackathon Flow Blockchain Agents
+🚀 Servidor do Frontend - Claude Code SDK Bootcamp
 Roda na porta 8080
 """
 
@@ -41,7 +41,7 @@ try:
 
     with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
         print("=" * 60)
-        print("🔧 HACKATHON FLOW BLOCKCHAIN AGENTS - FRONTEND")
+        print("🔧 Claude Code SDK Bootcamp - FRONTEND")
         print("=" * 60)
         print(f"📡 Servidor rodando na porta {PORT}")
         print(f"🔗 Acesse: http://localhost:{PORT}")

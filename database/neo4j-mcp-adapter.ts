@@ -66,7 +66,7 @@ export class Neo4jMCPAdapter {
         type: data.type,
         created_at: new Date().toISOString(),
         user: 'Diego Fornalha',
-        bootcamp_context: 'Hackathon Flow Blockchain Agents'
+        bootcamp_context: 'Claude Code SDK Bootcamp'
       }
     };
 

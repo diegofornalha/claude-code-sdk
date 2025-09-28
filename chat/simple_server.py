@@ -24,7 +24,7 @@ def run_server(port=8080):
     os.chdir(script_dir)
 
     print("=" * 60)
-    print("🔧 HACKATHON FLOW BLOCKCHAIN AGENTS - FRONTEND")
+    print("🔧 Claude Code SDK Bootcamp - FRONTEND")
     print("=" * 60)
     print(f"📡 Servidor rodando na porta {port}")
     print(f"🔗 Acesse: http://localhost:{port}")

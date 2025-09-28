@@ -1,4 +1,4 @@
-"""Type definitions for Hackathon Flow Blockchain Agents."""
+"""Type definitions for Claude Code SDK Bootcamp."""
 
 import sys
 from collections.abc import Awaitable, Callable
@@ -268,7 +268,7 @@ Message = Union[UserMessage, AssistantMessage, SystemMessage, ResultMessage]
 
 @dataclass
 class ClaudeCodeOptions:
-    """Query options for Hackathon Flow Blockchain Agents."""
+    """Query options for Claude Code SDK Bootcamp."""
 
     allowed_tools: List[str] = field(default_factory=list)
     max_thinking_tokens: int = 8080

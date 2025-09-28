@@ -210,7 +210,7 @@ export const synthesizeLearningTool: Tool = {
     const synthesis = {
       period: args.timeframe || 'week',
       keyLearnings: [
-        'Hackathon Flow Blockchain Agents é agnóstico de linguagem',
+        'Claude Code SDK Bootcamp é agnóstico de linguagem',
         'MCP permite ferramentas customizadas',
         'Python e TypeScript validam conhecimento'
       ],

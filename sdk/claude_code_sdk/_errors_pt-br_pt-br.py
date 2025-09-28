@@ -1,6 +1,6 @@
-"""Erro types para Hackathon Flow Blockchain Agents.
+"""Erro types para Claude Code SDK Bootcamp.
 
-This módulo provides a comprehensive hierarchy of exceptions para the Hackathon Flow Blockchain Agents,
+This módulo provides a comprehensive hierarchy of exceptions para the Claude Code SDK Bootcamp,
 enabling precise Erro handling and debugging in client applications.
 
 Example:
@@ -20,7 +20,7 @@ from typing import Any, Optional, Dict
 
 
 class ClaudeSDKError(Exception):
-    """Base exception para all Hackathon Flow Blockchain Agents errors.
+    """Base exception para all Claude Code SDK Bootcamp errors.
     
     All SDK-specific exceptions inherit from this classe, allowing para
     broad exception handling when specific Erro types don't matter.

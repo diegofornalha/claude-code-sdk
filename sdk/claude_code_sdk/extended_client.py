@@ -1,4 +1,4 @@
-"""Extended Hackathon Flow Blockchain Agents Client with advanced features."""
+"""Extended Claude Code SDK Bootcamp Client with advanced features."""
 
 import asyncio
 import time
@@ -18,7 +18,7 @@ from ._errors import CLIConnectionError, ValidationError, TimeoutError
 
 
 class ExtendedClaudeClient(ClaudeSDKClient):
-    """Enhanced Hackathon Flow Blockchain Agents Client with additional features.
+    """Enhanced Claude Code SDK Bootcamp Client with additional features.
     
     This client extends the base ClaudeSDKClient with:
     - Input validation

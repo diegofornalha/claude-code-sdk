@@ -1,4 +1,4 @@
-"""Hackathon Flow Blockchain Agents Client for interacting with Claude Code."""
+"""Claude Code SDK Bootcamp Client for interacting with Claude Code."""
 
 import json
 import os
@@ -93,7 +93,7 @@ class ClaudeSDKClient:
     """
 
     def __init__(self, options: Optional[ClaudeCodeOptions] = None):
-        """Initialize Hackathon Flow Blockchain Agents client.
+        """Initialize Claude Code SDK Bootcamp client.
         
         Args:
             options: Optional configuration for the client. If not provided,

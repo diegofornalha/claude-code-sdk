@@ -17,7 +17,7 @@ export const ProgressBar: React.FC = () => {
     { score: 60, label: 'Intermediário', description: 'MCP Tools dominado', icon: '🌳' },
     { score: 75, label: 'Avançado', description: 'Hooks e Client', icon: '🚀' },
     { score: 90, label: 'Expert', description: 'Pronto para produção', icon: '⭐' },
-    { score: 100, label: 'Master', description: 'Hackathon Flow Blockchain Agents Expert', icon: '🏆' }
+    { score: 100, label: 'Master', description: 'Claude Code SDK Bootcamp Expert', icon: '🏆' }
   ];
 
   const getCurrentMilestone = () => {

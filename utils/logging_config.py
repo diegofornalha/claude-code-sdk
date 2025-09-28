@@ -178,7 +178,7 @@ def _configure_specific_loggers():
     # Logger do FastAPI
     fastapi_logger = logging.getLogger("fastapi")
     
-    # Logger do Hackathon Flow Blockchain Agents
+    # Logger do Claude Code SDK Bootcamp
     claude_logger = logging.getLogger("claude_handler")
     claude_logger.setLevel(logging.DEBUG)
     

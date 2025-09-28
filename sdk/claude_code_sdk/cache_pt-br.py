@@ -1,4 +1,4 @@
-"""Advanced caching system for Hackathon Flow Blockchain Agents responses.
+"""Advanced caching system for Claude Code SDK Bootcamp responses.
 
 This module provides a sophisticated caching system with support for:
 - Multiple cache backends (memory, disk, Redis)

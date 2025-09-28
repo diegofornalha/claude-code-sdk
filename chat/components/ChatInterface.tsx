@@ -145,7 +145,7 @@ Use comandos específicos como:
         {messages.length === 0 ? (
           <div className="welcome-message">
             <h3>👋 Bem-vindo ao Neo4j Knowledge Agent!</h3>
-            <p>Eu ajudo você a navegar pelo bootcamp Hackathon Flow Blockchain Agents.</p>
+            <p>Eu ajudo você a navegar pelo bootcamp Claude Code SDK Bootcamp.</p>
 
             <div className="suggested-questions">
               <p>Perguntas sugeridas:</p>

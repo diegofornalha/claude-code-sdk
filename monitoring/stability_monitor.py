@@ -1,4 +1,4 @@
-"""Sistema de monitoramento de estabilidade e circuit breaker para a API Hackathon Flow Blockchain Agents."""
+"""Sistema de monitoramento de estabilidade e circuit breaker para a API Claude Code SDK Bootcamp."""
 
 import asyncio
 import time
