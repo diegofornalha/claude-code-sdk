@@ -1,6 +1,13 @@
 /**
  * Neo4j Agent Chat - Versão Unificada com Visualizador de Sessões
  * Combina chat sem limitações + leitor de sessões Claude SDK
+ *
+ * IMPORTANTE: Quando o Claude faz "Compacting conversation...", a conversa
+ * continua no MESMO session ID. Isso significa que o arquivo .jsonl
+ * recebe uma entrada type:"summary" com o resumo da conversa anterior,
+ * e depois continua com as novas mensagens. Isso permite manter todo o
+ * histórico de uma sessão longa em um único arquivo, mesmo após múltiplas
+ * compactações.
  */
 
 // Configuração
