@@ -145,10 +145,31 @@ app.get('/api/sessions/:id', async (req, res) => {
 // ARQUIVOS ESTÁTICOS E SPA
 // =====================================================
 
-// Servir arquivos estáticos
-app.use('/styles.css', express.static(path.join(__dirname, 'styles.css')));
-app.use('/app-unified.js', express.static(path.join(__dirname, 'app-unified.js')));
-app.use('/app-no-limit.js', express.static(path.join(__dirname, 'app-no-limit.js')));
+// Servir arquivos estáticos ESPECÍFICOS primeiro
+app.get('/styles.css', (req, res) => {
+    res.sendFile(path.join(__dirname, 'styles.css'));
+});
+
+app.get('/app-unified.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'app-unified.js'));
+});
+
+app.get('/app-complete.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'app-complete.js'));
+});
+
+app.get('/app-no-limit.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'app-no-limit.js'));
+});
+
+app.get('/manifest.json', (req, res) => {
+    res.sendFile(path.join(__dirname, 'manifest.json'));
+});
+
+// Rota específica para /projects
+app.get('/projects', (req, res) => {
+    res.sendFile(path.join(__dirname, 'projects.html'));
+});
 
 // IMPORTANTE: Catch-all para SPA - sempre retorna index.html
 app.get('*', (req, res) => {

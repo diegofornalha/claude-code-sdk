@@ -74,6 +74,63 @@
 <body>
     <!-- Scripts unificados no app-unified.js -->
     <script>
+        // Função auxiliar para carregar sessão diretamente
+        async function loadSessionDirectly(projectName, sessionId) {
+            try {
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = '[STATUS] Carregando sessão...';
+
+                const response = await fetch(`/api/projects/${projectName}/sessions/${sessionId}`);
+                if (!response.ok) throw new Error('Sessão não encontrada');
+
+                const content = await response.text();
+                const lines = content.split('\n').filter(l => l.trim());
+
+                statusEl.textContent = `[STATUS] Sessão carregada: ${lines.length} mensagens`;
+
+                // Renderiza mensagens
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.innerHTML = '';
+
+                lines.forEach(line => {
+                    try {
+                        const entry = JSON.parse(line);
+                        const msgDiv = document.createElement('div');
+                        msgDiv.className = entry.type === 'user' ? 'message user' : 'message assistant';
+
+                        let content = '';
+                        if (entry.message && entry.message.content) {
+                            if (typeof entry.message.content === 'string') {
+                                content = entry.message.content;
+                            } else if (Array.isArray(entry.message.content)) {
+                                content = entry.message.content.map(item => item.text || item.content || '').join('\n');
+                            }
+                        }
+
+                        const timestamp = new Date(entry.created_at).toLocaleTimeString('pt-BR');
+
+                        msgDiv.innerHTML = `
+                            <div class="message-header">${entry.type === 'user' ? '👤 USER' : '🤖 ASSISTANT'} - ${timestamp}</div>
+                            <div class="message-content">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div>
+                            ${entry.cache_read_tokens || entry.output_tokens ? `
+                                <div class="message-footer">Tokens: ${entry.cache_read_tokens || 0} (cache) + ${entry.output_tokens || 0} (output)</div>
+                            ` : ''}
+                        `;
+                        messagesDiv.appendChild(msgDiv);
+                    } catch (e) {
+                        console.error('Erro ao parsear linha:', e);
+                    }
+                });
+
+                // Auto-scroll para o fim
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            } catch (error) {
+                document.getElementById('status').textContent = `[STATUS] Erro: ${error.message}`;
+                console.error('Erro ao carregar sessão:', error);
+            }
+        }
+
         // Modo de operação detectado automaticamente
         window.addEventListener('DOMContentLoaded', () => {
             const path = window.location.pathname;
@@ -84,9 +141,15 @@
                 document.getElementById('messageInput')?.setAttribute('disabled', 'true');
                 document.getElementById('messageInput')?.setAttribute('placeholder', '🔒 Modo visualização de sessão');
 
-                // Ativa o leitor
-                if (window.claudeReader) {
-                    window.claudeReader.initFromURL();
+                // Extrai projeto e sessão da URL
+                const parts = path.split('/').filter(p => p);
+                if (parts.length >= 2) {
+                    const sessionId = parts[parts.length - 1];
+                    const projectName = parts[parts.length - 2];
+
+                    // Carrega a sessão diretamente
+                    console.log('Carregando sessão:', projectName, sessionId);
+                    loadSessionDirectly(projectName, sessionId);
                 }
             }
             // Se é a raiz, mostra lista de sessões
@@ -104,7 +167,7 @@
                         text-align: center;
                     `;
                     selector.innerHTML = `
-                        <button onclick="window.claudeReader.initFromURL()" style="
+                        <button onclick="window.location.href='/projects'" style="
                             background: #00ff00;
                             color: #000;
                             padding: 8px 20px;
@@ -112,7 +175,7 @@
                             cursor: pointer;
                             font-weight: bold;
                             margin-right: 10px;
-                        ">📁 Ver Sessões do Claude SDK</button>
+                        ">📁 Ver Projetos e Sessões</button>
                         <span style="color: #999; font-size: 12px;">
                             ou continue conversando normalmente abaixo
                         </span>

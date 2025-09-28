@@ -2,25 +2,16 @@
   "name": "Neo4j Agent Chat",
   "short_name": "Neo4j Chat",
   "description": "Chat interface for Neo4j Agent API with Claude SDK integration",
-  "start_url": "/chat/",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1a1a",
   "theme_color": "#00ff00",
+  "background_color": "#0a0a0a",
   "orientation": "portrait-primary",
-  "icons": [],
-  "categories": ["productivity", "developer", "utilities"],
-  "lang": "pt-BR",
-  "dir": "ltr",
-  "scope": "/chat/",
-  "prefer_related_applications": false,
-  "shortcuts": [
+  "icons": [
     {
-      "name": "New Chat",
-      "short_name": "Chat",
-      "description": "Start a new chat session",
-      "url": "/chat/?new=true",
-      "icons": []
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2300ff00' width='192' height='192'/><text x='50%25' y='50%25' text-anchor='middle' dy='.35em' font-size='100' fill='%23000'>💬</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
     }
-  ],
-  "screenshots": []
+  ]
 }
