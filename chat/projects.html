@@ -475,8 +475,36 @@
         };
 
         // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProjects();
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Verifica se tem sessão na URL
+            const path = window.location.pathname;
+            const pathParts = path.split('/').filter(p => p);
+
+            // Carrega projetos primeiro
+            await loadProjects();
+
+            // Se tem /projects/[projeto]/[sessão]
+            if (pathParts.length >= 3 && pathParts[0] === 'projects') {
+                const projectName = pathParts[1];
+                const sessionId = pathParts[2];
+
+                // Expande o projeto e carrega a sessão
+                setTimeout(async () => {
+                    // Simula clique no projeto para expandir
+                    const projectEl = document.getElementById(`project-${projectName}`);
+                    if (projectEl) {
+                        projectEl.classList.add('expanded', 'active');
+                        currentProject = projectName;
+                        await loadSessions(projectName);
+
+                        // Depois carrega a sessão específica
+                        setTimeout(() => {
+                            loadSession(projectName, sessionId);
+                        }, 100);
+                    }
+                }, 100);
+            }
+
             startAutoRefresh();
             updateStats();
         });
@@ -658,7 +686,7 @@
             document.getElementById('monitorInfo').textContent =
                 `${messages.length} mensagens | Última: ${
                     messages.length > 0 ?
-                    new Date(messages[messages.length - 1].created_at).toLocaleString('pt-BR') :
+                    new Date(messages[messages.length - 1].timestamp || messages[messages.length - 1].created_at).toLocaleString('pt-BR') :
                     'N/A'
                 }`;
 
@@ -667,7 +695,7 @@
             container.innerHTML = messages.map((msg, index) => {
                 const isUser = msg.type === 'user';
                 const content = extractMessageContent(msg.message);
-                const timestamp = new Date(msg.created_at).toLocaleTimeString('pt-BR');
+                const timestamp = new Date(msg.timestamp || msg.created_at).toLocaleTimeString('pt-BR');
 
                 // Detecta se é uma mensagem nova (nas últimas 5)
                 const isNew = index >= messages.length - 5;

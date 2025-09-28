@@ -171,6 +171,11 @@ app.get('/projects', (req, res) => {
     res.sendFile(path.join(__dirname, 'projects.html'));
 });
 
+// Rota para /projects com projeto/sessão - ainda retorna projects.html
+app.get('/projects/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'projects.html'));
+});
+
 // IMPORTANTE: Catch-all para SPA - sempre retorna index.html
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
