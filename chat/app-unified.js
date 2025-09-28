@@ -477,13 +477,26 @@ async function viewSession(sessionId) {
         const path = window.location.pathname;
         let apiUrl = `/api/sessions/${sessionId}`;
 
-        if (path.includes('-Users-2a-Desktop-neo4j-agent-claude-code-sdk')) {
+        // Verifica se está em uma URL de projeto (com ou sem hífen)
+        if (path.includes('Users-2a-Desktop-neo4j-agent-claude-code-sdk')) {
+            // Sempre usa o nome do projeto COM hífen na API
             apiUrl = `/api/projects/-Users-2a-Desktop-neo4j-agent-claude-code-sdk/sessions/${sessionId}`;
         }
 
         const response = await fetch(apiUrl);
 
         if (!response.ok) {
+            // Tenta com outro formato se falhar
+            if (apiUrl.includes('/api/sessions/')) {
+                apiUrl = `/api/projects/-Users-2a-Desktop-neo4j-agent-claude-code-sdk/sessions/${sessionId}`;
+                const retryResponse = await fetch(apiUrl);
+                if (!retryResponse.ok) {
+                    throw new Error('Sessão não encontrada');
+                }
+                const jsonlData = await retryResponse.text();
+                displaySession(sessionId, jsonlData);
+                return;
+            }
             throw new Error('Sessão não encontrada');
         }
 
@@ -491,7 +504,12 @@ async function viewSession(sessionId) {
         displaySession(sessionId, jsonlData);
     } catch (error) {
         log(`❌ Erro ao carregar sessão: ${error.message}`);
-        updateStatus('Erro ao carregar sessão', 'error');
+        updateStatus('Erro: Sessão não encontrada - voltando ao chat...', 'error');
+
+        // Aguarda 2 segundos e volta para o chat
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 2000);
     }
 }
 
@@ -545,20 +563,30 @@ function displaySession(sessionId, jsonlData) {
         const timestamp = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString('pt-BR') : '';
 
         if (msg.role === 'user') {
+            // Para usuário, mostra mensagem com escape HTML básico
+            const escapedContent = msg.content
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\n/g, '<br>');
+
             contentDiv.innerHTML = `
-                <span style="color: #00ffff">👤 USER ${timestamp ? `[${timestamp}]` : ''}:</span><br>
-                ${escapeHtml(msg.content)}
+                <span style="color: #00ffff">👤 USER ${timestamp ? `- ${timestamp}` : '- Invalid Date'}:</span><br>
+                ${escapedContent}
             `;
         } else {
+            // Para assistente, renderiza markdown
+            const renderedContent = renderMarkdown(msg.content);
+
             contentDiv.innerHTML = `
-                <span style="color: #00ff00">🤖 CLAUDE ${timestamp ? `[${timestamp}]` : ''}:</span>
+                <span style="color: #00ff00">🤖 ASSISTANT ${timestamp ? `- ${timestamp}` : '- Invalid Date'}:</span>
                 ${msg.tokens ? `
                     <span style="font-size: 10px; color: #666;">
                         (${msg.tokens.input}→${msg.tokens.output} tokens)
                     </span>
                 ` : ''}
                 <br>
-                ${renderMarkdown(msg.content)}
+                ${renderedContent}
             `;
         }
 
@@ -681,7 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navBar.innerHTML = `
             <div>
                 <span style="color: #00ff00; font-weight: bold;">
-                    🔧 Neo4j Agent Chat + Claude SDK Viewer
+                    Claude SDK Viewer
                 </span>
             </div>
             <div>
@@ -693,6 +721,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     cursor: pointer;
                     margin-right: 10px;
                 ">📁 Ver Sessões</button>
+                <button onclick="window.location.href='http://localhost:3000/projects'" style="
+                    background: transparent;
+                    color: #00ff00;
+                    border: 1px solid #00ff00;
+                    padding: 5px 15px;
+                    cursor: pointer;
+                    margin-right: 10px;
+                ">PROJETOS</button>
                 <button onclick="backToChat()" style="
                     background: #00ff00;
                     color: #000;
@@ -709,35 +745,56 @@ document.addEventListener('DOMContentLoaded', () => {
     // Detecta modo baseado na URL
     const path = window.location.pathname;
 
-    // Roteamento melhorado
-    // /Users-2a-Desktop-neo4j-agent-claude-code-sdk -> lista de sessões
-    // /Users-2a-Desktop-neo4j-agent-claude-code-sdk/[uuid] -> sessão específica
-    // /[uuid] -> sessão específica (compatibilidade)
+    // Sistema de roteamento simplificado:
+    // /projects -> vai para a página de projetos (monitor)
+    // /-Users-[...]/[uuid] -> visualização tipo chat (SEMPRE com hífen)
+    // / -> chat normal
 
-    if (path === '/-Users-2a-Desktop-neo4j-agent-claude-code-sdk' ||
-        path === '/-Users-2a-Desktop-neo4j-agent-claude-code-sdk/') {
-        // Mostra lista de sessões do projeto
-        operationMode = 'viewer';
-        showSessions();
-    } else if (path.startsWith('/-Users-2a-Desktop-neo4j-agent-claude-code-sdk/')) {
-        // Extrai o UUID após o caminho do projeto
-        const sessionMatch = path.match(/\/([a-f0-9-]{36})/);
+    if (path === '/projects' || path.startsWith('/projects/')) {
+        // Redireciona para a página de projetos
+        window.location.href = '/projects';
+        return;
+    }
+
+    // URLs de sessão devem sempre ter hífen: /-Users-
+    if (path.startsWith('/-Users-')) {
+        // Extrai projeto e sessão ID
+        const sessionMatch = path.match(/\/-Users-[^\/]+\/([a-f0-9-]{36})/);
+
         if (sessionMatch) {
+            // Visualização tipo chat de uma sessão específica
             const sessionId = sessionMatch[1];
             operationMode = 'viewer';
-            viewSession(sessionId);
-        } else {
-            // URL inválida, mostra lista
+
+            // Desabilita entrada de chat
+            const input = document.getElementById('messageInput');
+            if (input) {
+                input.disabled = true;
+                input.placeholder = '🔒 Modo visualização de sessão';
+            }
+
+            // Aguarda DOM carregar e então carrega a sessão
+            setTimeout(() => {
+                viewSession(sessionId);
+            }, 100);
+        } else if (path === '/-Users-2a-Desktop-neo4j-agent-claude-code-sdk' ||
+                   path === '/-Users-2a-Desktop-neo4j-agent-claude-code-sdk/') {
+            // Lista de sessões
             operationMode = 'viewer';
             showSessions();
         }
-    } else if (path.match(/^\/[a-f0-9-]{36}$/)) {
-        // Compatibilidade: apenas UUID
-        const sessionId = path.match(/([a-f0-9-]{36})/)[1];
-        operationMode = 'viewer';
-        viewSession(sessionId);
-    } else {
-        // Página inicial - modo chat
+    }
+    // Se a URL tem formato errado (sem hífen) ou é inválida, volta para o chat normal
+    else if (path.startsWith('/Users-')) {
+        console.log('URL sem hífen detectada, voltando para o chat normal');
+        // Volta para a home (chat)
+        window.history.replaceState(null, '', '/');
+        operationMode = 'chat';
+        updateActiveRequestsIndicator();
+        testConnection();
+    }
+    // Página inicial - modo chat
+    else {
         operationMode = 'chat';
         updateActiveRequestsIndicator();
         testConnection();
