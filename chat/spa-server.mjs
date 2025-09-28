@@ -141,6 +141,21 @@ app.get('/api/sessions/:id', async (req, res) => {
     res.redirect(`/api/projects/${defaultProject}/sessions/${req.params.id}`);
 });
 
+// Rota específica para /api/sessions/:projectName/:sessionId
+app.get('/api/sessions/:projectName/:sessionId', async (req, res) => {
+    try {
+        const filePath = path.join(
+            CLAUDE_PROJECTS_BASE,
+            req.params.projectName,
+            `${req.params.sessionId}.jsonl`
+        );
+        const content = await fs.readFile(filePath, 'utf-8');
+        res.type('text/plain').send(content);
+    } catch (error) {
+        res.status(404).json({ error: 'Session not found' });
+    }
+});
+
 // =====================================================
 // ARQUIVOS ESTÁTICOS E SPA
 // =====================================================

@@ -27,9 +27,54 @@ let currentStreamingMessageDiv = null;
 let operationMode = 'chat'; // 'chat' ou 'viewer'
 let currentSessionData = null;
 
+// Controle de numeração de chats
+let currentChatNumber = null; // Número do chat atual (ex: 01, 02, 03...)
+let isFirstMessage = true;
+let chatHistory = {}; // Histórico de todos os chats
+
 // =====================================================
 // FUNÇÕES DO CHAT ORIGINAL
 // =====================================================
+
+// Função para obter próximo número de chat
+function getNextChatNumber() {
+    const stored = localStorage.getItem('lastChatNumber');
+    if (stored) {
+        const num = parseInt(stored);
+        const next = (num + 1).toString().padStart(2, '0');
+        localStorage.setItem('lastChatNumber', next);
+        return next;
+    }
+    // Se não há número armazenado, começa do 01
+    localStorage.setItem('lastChatNumber', '01');
+    return '01';
+}
+
+// Função para inicializar sessão de chat
+function initChatSession(chatNumber) {
+    // Armazena informações da sessão
+    const sessionInfo = {
+        chatNumber: chatNumber,
+        started: new Date().toISOString(),
+        sessionId: null // Será preenchido quando recebermos resposta do servidor
+    };
+
+    localStorage.setItem(`chat-${chatNumber}`, JSON.stringify(sessionInfo));
+    updateStatus(`Chat-${chatNumber} iniciado`, 'success');
+}
+
+// Função para carregar sessão existente
+function loadChatSession(chatNumber) {
+    const sessionData = localStorage.getItem(`chat-${chatNumber}`);
+    if (sessionData) {
+        const info = JSON.parse(sessionData);
+        if (info.sessionId) {
+            // Se temos um sessionId, podemos carregar mensagens do servidor
+            return info.sessionId;
+        }
+    }
+    return null;
+}
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -159,6 +204,15 @@ async function sendMessage() {
     if (!message) {
         log('⚠️ Mensagem vazia', 'error');
         return;
+    }
+
+    // Se não estamos em um chat numerado, criar um novo
+    if (!currentChatNumber) {
+        currentChatNumber = getNextChatNumber();
+        const newChatUrl = `/chat-${currentChatNumber}`;
+        window.history.pushState({chatNumber: currentChatNumber}, '', newChatUrl);
+        log(`📢 Novo chat criado: chat-${currentChatNumber}`);
+        initChatSession(currentChatNumber);
     }
 
     const requestId = ++requestIdCounter;
@@ -821,6 +875,128 @@ document.addEventListener('DOMContentLoaded', () => {
         updateActiveRequestsIndicator();
         testConnection();
     }
+    // URLs de chat numeradas: /chat-01, /chat-02, etc
+    else if (path.match(/^\/chat-(\d{2})$/)) {
+        const chatMatch = path.match(/^\/chat-(\d{2})$/);
+        currentChatNumber = chatMatch[1];
+
+        // Mapear chat-01 para a sessão específica
+        if (currentChatNumber === '01') {
+            const sessionId = 'fdc86560-929d-4d4f-ae8d-3ca360dcfad0';
+            log(`📬 Carregando chat-01 com sessão ${sessionId}`);
+
+            // Aguarda o DOM carregar completamente
+            setTimeout(() => {
+                // Carrega a sessão do arquivo .jsonl
+                fetch(`/api/sessions/-Users-2a-Desktop-neo4j-agent-claude-code-sdk/${sessionId}`)
+                    .then(r => r.text())
+                    .then(jsonl => {
+                        // Parsear JSONL manualmente para esta sessão
+                        const messages = [];
+                        const lines = jsonl.split('\n').filter(l => l.trim());
+
+                        lines.forEach(line => {
+                            try {
+                                const entry = JSON.parse(line);
+
+                                if (entry.type === 'user' && entry.message) {
+                                    let content = '';
+
+                                    // Verifica se content é string
+                                    if (typeof entry.message.content === 'string') {
+                                        content = entry.message.content;
+                                    }
+                                    // Se for array (tool results)
+                                    else if (Array.isArray(entry.message.content)) {
+                                        entry.message.content.forEach(block => {
+                                            if (block.type === 'tool_result' && block.content) {
+                                                content += block.content + '\n';
+                                            }
+                                        });
+                                    }
+
+                                    if (content && content.trim()) {
+                                        messages.push({
+                                            role: 'user',
+                                            content: content.trim(),
+                                            timestamp: entry.timestamp
+                                        });
+                                    }
+                                } else if (entry.type === 'assistant' && entry.message) {
+                                    let content = '';
+
+                                    if (typeof entry.message.content === 'string') {
+                                        content = entry.message.content;
+                                    } else if (Array.isArray(entry.message.content)) {
+                                        entry.message.content.forEach(block => {
+                                            if (block.type === 'text') {
+                                                content += block.text;
+                                            } else if (block.type === 'tool_use') {
+                                                // Mostra informação sobre uso de ferramenta
+                                                content += `\n[Usando ferramenta: ${block.name}]\n`;
+                                            }
+                                        });
+                                    }
+
+                                    if (content && content.trim()) {
+                                        messages.push({
+                                            role: 'assistant',
+                                            content: content.trim(),
+                                            timestamp: entry.timestamp
+                                        });
+                                    }
+                                }
+                            } catch (e) {
+                                console.warn('Erro ao parsear linha:', e);
+                            }
+                        });
+
+                        // Exibir mensagens
+                        const messagesDiv = document.getElementById('messages');
+                        if (messagesDiv && messages.length > 0) {
+                            messagesDiv.innerHTML = '';
+
+                            messages.forEach(msg => {
+                                const div = document.createElement('div');
+                                div.className = 'message';
+                                div.style.marginBottom = '15px';
+
+                                const contentDiv = document.createElement('div');
+                                contentDiv.className = 'message-content';
+
+                                const time = new Date(msg.timestamp).toLocaleTimeString('pt-BR');
+
+                                if (msg.role === 'user') {
+                                    contentDiv.innerHTML = `
+                                        <span style="color: #00ffff">👤 USER - ${time}:</span><br>
+                                        <pre style="white-space: pre-wrap; margin: 5px 0;">${msg.content}</pre>
+                                    `;
+                                } else {
+                                    contentDiv.innerHTML = `
+                                        <span style="color: #00ff00">🤖 ASSISTANT - ${time}:</span><br>
+                                        <div style="margin: 5px 0;">${msg.content}</div>
+                                    `;
+                                }
+
+                                div.appendChild(contentDiv);
+                                messagesDiv.appendChild(div);
+                            });
+
+                            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                            updateStatus(`Chat-01 carregado: ${messages.length} mensagens`, 'success');
+                            log(`✅ Chat-01 carregado com ${messages.length} mensagens`);
+                        }
+                    })
+                    .catch(err => {
+                        log(`❌ Erro ao carregar chat-01: ${err}`, 'error');
+                    });
+            }, 500);
+        }
+
+        operationMode = 'chat';
+        updateActiveRequestsIndicator();
+        testConnection();
+    }
     // Página inicial - modo chat
     else {
         operationMode = 'chat';
@@ -847,6 +1023,75 @@ document.addEventListener('DOMContentLoaded', () => {
     log('✅ Sistema iniciado com chat e visualizador de sessões!');
 });
 
+// Função para criar novo chat
+function newChat() {
+    // Limpa mensagens atuais
+    const messagesDiv = document.getElementById('messages');
+    if (messagesDiv) {
+        messagesDiv.innerHTML = '';
+    }
+
+    // Reseta estado
+    currentChatNumber = null;
+    isFirstMessage = true;
+
+    // Volta para a página inicial
+    window.history.pushState(null, '', '/');
+
+    updateStatus('Pronto para iniciar novo chat', 'info');
+    log('📝 Novo chat pronto para ser iniciado');
+
+    // Foca no input
+    const input = document.getElementById('messageInput');
+    if (input) {
+        input.value = '';
+        input.focus();
+    }
+}
+
+// Função para navegar para um chat específico
+function navigateToChat(chatNumber) {
+    if (!chatNumber) return;
+
+    // Navega para o chat selecionado
+    window.location.href = `/chat-${chatNumber}`;
+}
+
+// Função para listar chats disponíveis
+function updateChatList() {
+    // Busca todos os chats salvos no localStorage
+    const chats = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('chat-')) {
+            const chatNum = key.replace('chat-', '');
+            const data = JSON.parse(localStorage.getItem(key));
+            chats.push({
+                number: chatNum,
+                started: data.started
+            });
+        }
+    }
+
+    // Ordena por número
+    chats.sort((a, b) => a.number.localeCompare(b.number));
+
+    // Atualiza selector se existir
+    const selector = document.getElementById('chatSelector');
+    if (selector) {
+        selector.innerHTML = '<option value="">Chats Anteriores</option>';
+        chats.forEach(chat => {
+            const option = document.createElement('option');
+            option.value = chat.number;
+            option.textContent = `Chat-${chat.number}`;
+            if (currentChatNumber === chat.number) {
+                option.selected = true;
+            }
+            selector.appendChild(option);
+        });
+    }
+}
+
 // Exportar funções globais
 window.sendMessage = sendMessage;
 window.testConnection = testConnection;
@@ -856,3 +1101,6 @@ window.backToChat = backToChat;
 window.viewSession = viewSession;
 window.viewSessionWithURL = viewSessionWithURL;
 window.loadSessionsList = loadSessionsList;
+window.newChat = newChat;
+window.navigateToChat = navigateToChat;
+window.updateChatList = updateChatList;
