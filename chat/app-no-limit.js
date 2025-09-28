@@ -208,9 +208,26 @@ async function sendMessage() {
                     try {
                         const data = JSON.parse(line.slice(6));
 
-                        if (data.type === 'content') {
-                            fullResponse += data.content || '';
+                        // LOG COMPLETO DE DEBUG - mostra TUDO
+                        log(`🔍 Evento: ${data.type} - ${JSON.stringify(data).substring(0, 100)}`);
+
+                        if (data.type === 'session_created') {
+                            log(`📌 Sessão criada: ${data.session_id}`);
+                        }
+                        else if (data.type === 'processing') {
+                            log('⏳ Processando...');
+                            updateStatus('Claude está processando...', 'info');
+                        }
+                        else if (data.type === 'content') {
+                            const content = data.content || '';
+                            fullResponse += content;
                             updateStreamingMessage(fullResponse);
+
+                            // Log de cada chunk em tempo real
+                            if (content.length > 0) {
+                                const preview = content.substring(0, 50).replace(/\n/g, ' ');
+                                log(`📝 Chunk recebido: "${preview}${content.length > 50 ? '...' : ''}"`);
+                            }
                         } else if (data.type === 'done') {
                             log(`✅ Resposta #${requestId} completa`);
                             updateStatus('Resposta recebida', 'success');

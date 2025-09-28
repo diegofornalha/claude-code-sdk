@@ -138,6 +138,9 @@ function addMessage(content, isUser = false, requestId = null) {
     if (!isUser) {
         const renderedContent = renderMarkdown(content);
         contentDiv.innerHTML = `<span style="color: #00ff00">🤖 CLAUDE:</span><br>${renderedContent}`;
+
+        // Para mensagens do Claude, configura como mensagem de streaming atual
+        currentStreamingMessageDiv = messageDiv;
     } else {
         const safeContent = Utils.sanitizeText(content).replace(/\n/g, '<br>');
         contentDiv.innerHTML = `<span style="color: #00ffff">👤 USER:</span><br>${safeContent}`;
@@ -162,8 +165,9 @@ function addMessage(content, isUser = false, requestId = null) {
         // Scroll to show the Claude message header at the top of visible area
         // with a small offset to show previous context
         messageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        currentStreamingMessageDiv = messageDiv;
     }
+
+    return messageDiv;
 }
 
 function updateStreamingMessage(content, isUser = false) {
@@ -395,8 +399,18 @@ async function sendMessage() {
                         }
                         else if (data.type === 'content' || data.type === 'text' || data.type === 'text_chunk') {
                             let content = data.content || data.text || '';
+
+                            // Acumula o texto completo
                             fullResponse += content;
-                            updateStreamingMessage(fullResponse, false);
+
+                            // Exibe incrementalmente - cada chunk adiciona ao que já existe
+                            if (!currentStreamingMessageDiv) {
+                                // Cria o div inicial se não existir
+                                addMessage(content, false, requestId);
+                            } else {
+                                // Atualiza com o texto completo acumulado
+                                updateStreamingMessage(fullResponse, false);
+                            }
 
                             if (content.length > 15) {
                                 const preview = content.substring(0, 30).replace(/\n/g, ' ');
