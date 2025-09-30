@@ -673,7 +673,8 @@ class ClaudeHandler:
             allowed_tools=config.allowed_tools if config.allowed_tools else None,
             max_turns=config.max_turns if config.max_turns else None,
             permission_mode=config.permission_mode,  # SEMPRE inclui bypass
-            cwd=config.cwd if config.cwd else None
+            cwd=config.cwd if config.cwd else None,
+            extra_args={"setting-sources": "project"}  # Carrega CLAUDE.md via CLI flag (sem -- pois é adicionado automaticamente)
         )
 
         # Log de debug para verificar permissões
