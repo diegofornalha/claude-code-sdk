@@ -9,7 +9,7 @@ import socketserver
 import os
 import sys
 
-PORT = 8080
+PORT = 8081
 # Detecta automaticamente o diretório onde o script está
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DIRECTORY = SCRIPT_DIR  # Serve arquivos do diretório atual

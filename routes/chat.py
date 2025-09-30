@@ -24,6 +24,7 @@ class ChatMessage(BaseModel):
     message: str
     session_id: Optional[str] = None
     project_id: str = "neo4j-agent"
+    cwd: Optional[str] = None
 
     def validate_and_sanitize(self):
         """Valida e sanitiza todos os campos"""
@@ -33,6 +34,10 @@ class ChatMessage(BaseModel):
             self.session_id = validator.validate(self.session_id, InputType.SESSION_ID)
 
         self.project_id = validator.validate(self.project_id, InputType.PROJECT_ID)
+
+        # cwd não precisa validação especial, apenas sanitização básica se fornecido
+        if self.cwd:
+            self.cwd = self.cwd.strip()
 
         return self
 
@@ -57,12 +62,17 @@ async def chat_stream(chat_message: ChatMessage, request: Request):
             # Criar ou recuperar sessão
             if not chat_message.session_id:
                 session_id = str(uuid.uuid4())
+                # Log para debug
+                print(f"🔍 DEBUG: project_id={chat_message.project_id}, cwd={chat_message.cwd}")
+
                 # Criar nova sessão
                 session_config = SessionConfig(
                     project_id=chat_message.project_id,
                     temperature=0.7,
-                    model="claude-3-5-sonnet-20241022"
+                    model="claude-3-5-sonnet-20241022",
+                    cwd=chat_message.cwd if chat_message.cwd else None
                 )
+                print(f"🔍 DEBUG SessionConfig: cwd={session_config.cwd}")
                 await claude_handler.create_session(session_id, session_config)
 
                 # Notificar criação de sessão
