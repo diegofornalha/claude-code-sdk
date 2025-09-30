@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: claude-code-sdk
+Version: 0.1.0
+Summary: Python SDK for Claude Code - Interactive AI development with Claude
+Author-email: Claude Code Team <support@claude.ai>
+License: MIT
+Project-URL: Homepage, https://github.com/anthropics/claude-code-sdk-python
+Project-URL: Documentation, https://claude-code-sdk.readthedocs.io
+Project-URL: Repository, https://github.com/anthropics/claude-code-sdk-python
+Project-URL: Issues, https://github.com/anthropics/claude-code-sdk-python/issues
+Project-URL: Changelog, https://github.com/anthropics/claude-code-sdk-python/blob/main/CHANGELOG.md
+Keywords: claude,ai,sdk,anthropic,code-generation,developer-tools,mcp,llm
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Operating System :: OS Independent
+Classifier: Typing :: Typed
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: anyio>=3.7.0
+Requires-Dist: typing-extensions>=4.5.0; python_version < "3.11"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest>=7.4.0; extra == "test"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "test"
+Requires-Dist: pytest-cov>=4.1.0; extra == "test"
+Requires-Dist: pytest-mock>=3.11.0; extra == "test"
+Provides-Extra: docs
+Requires-Dist: sphinx>=7.0.0; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=1.3.0; extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints>=1.24.0; extra == "docs"

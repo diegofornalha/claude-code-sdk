@@ -26,7 +26,7 @@ from core.neo4j_memory_integration import get_memory_integration
 sdk_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sdk')
 sys.path.insert(0, sdk_dir)
 
-from claude_code_sdk import (
+from claude_agent_sdk import (
     AssistantMessage,
     TextBlock,
     ResultMessage,
@@ -35,7 +35,7 @@ from claude_code_sdk import (
     SystemMessage,
     ToolUseBlock,
     ToolResultBlock,
-    ClaudeCodeOptions,
+    ClaudeAgentOptions,
     __version__
 )
 
@@ -668,13 +668,13 @@ class ClaudeHandler:
     async def _create_new_client(self, config: SessionConfig) -> ClaudeSDKClient:
         """Cria novo cliente SDK."""
         # SEMPRE cria opções para garantir que permission_mode seja aplicado
-        options = ClaudeCodeOptions(
+        options = ClaudeAgentOptions(
             system_prompt=config.system_prompt if config.system_prompt else None,
             allowed_tools=config.allowed_tools if config.allowed_tools else None,
             max_turns=config.max_turns if config.max_turns else None,
             permission_mode=config.permission_mode,  # SEMPRE inclui bypass
             cwd=config.cwd if config.cwd else None,
-            extra_args={"setting-sources": "project"}  # Carrega CLAUDE.md via CLI flag (sem -- pois é adicionado automaticamente)
+            setting_sources=["project"]  # Carrega CLAUDE.md via CLI flag
         )
 
         # Log de debug para verificar permissões
